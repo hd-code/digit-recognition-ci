@@ -1,35 +1,44 @@
-import math
+# Diese Datei enthält die Aktivierungsfunktion für das neuronale Netz
+
+# ------------------------------------------------------------------------------
+
+from math import exp
+from typing import Callable
+
 import numpy as np
 
 # ------------------------------------------------------------------------------
 
-# vector => vector
-def activation(x):
-    return np.array(map(sigmoid, x))
+# Aktivierungsfunktion für skalare Werte (Sigmoid- oder logistische Funktion)
+def sigmoid(x: float) -> float:
+    return 1 / (1 + exp(-x))
 
-# vector => vector
-def activationDerivative(x):
-    return np.array(map(sigmoidDerivative, x))
-
-# ------------------------------------------------------------------------------
-
-def sigmoid(x):
-    return 1 / (1 + math.exp(-x))
-
-def sigmoidDerivative(x):
+# Ableitung der Aktivierungsfunktion für skalare Werte
+def sigmoidDerivative(x: float) -> float:
     sig = sigmoid(x)
     return sig * (1 - sig)
 
-# - Testing --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+# Aktivierungsfunktion für Vektoren
+calc: Callable[[np.ndarray], np.ndarray] = np.vectorize(sigmoid)
+
+# Ableitung der Aktivierungsfunktion für Vektoren
+calcDerivative: Callable[[np.ndarray], np.ndarray] = np.vectorize(sigmoidDerivative)
+
+# ------------------------------------------------------------------------------
+# Testing
 
 if __name__ == '__main__':
-    input = [-10, -5, -1, -0.5, 0, 0.5, 1, 5, 10]
+    input: np.ndarray = np.array([-10, -5, -1, -0.5, 0, 0.5, 1, 5, 10], 'f')
 
-    want = [0, 0.007, 0.269, 0.378, 0.5, 0.622, 0.731, 0.993, 1]
-    wantDeriv = [0, 0.007, 0.197, 0.235, 0.25, 0.235, 0.197, 0.007, 0]
+    want = np.array([0, 0.007, 0.269, 0.378, 0.5, 0.622, 0.731, 0.993, 1])
+    wantDeriv = np.array([0, 0.007, 0.197, 0.235, 0.25, 0.235, 0.197, 0.007, 0])
 
-    got = map(lambda x: round(x * 1000) / 1000, activation(input))
-    gotDeriv = map(lambda x: round(x * 1000) / 1000, activationDerivative(input))
+    got = calc(input).round(3)
+    gotDeriv = calcDerivative(input).round(3)
 
-    assert got == want, 'sigmoid failed'
-    assert gotDeriv == wantDeriv, 'sigmoid derivative failed'
+    assert np.array_equal(got, want)
+    assert np.array_equal(gotDeriv, wantDeriv)
+
+    print('activation.py => tests succeeded')

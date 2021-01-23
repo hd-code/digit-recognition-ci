@@ -1,102 +1,78 @@
-import activation as a
+# ------------------------------------------------------------------------------
+
 import error as e
+import layer
 
 import numpy as np
 
 # ------------------------------------------------------------------------------
 
-HIDDEN_LAYER = 'hidden'
-OUTPUT_LAYER = 'output'
+class Net:
+    def __init__(self, hiddenLayer: layer.Layer, outputLayer: layer.Layer):
+        self.hiddenLayer = hiddenLayer
+        self.outputLayer = outputLayer
 
-BIAS = 'bias'
-WEIGHTS = 'weights'
-
-# ------------------------------------------------------------------------------
-
-def init(numOfInputs, numOfHiddenNeurons, numOfOutputs):
-    return {
-        HIDDEN_LAYER: initLayer(numOfInputs, numOfHiddenNeurons),
-        OUTPUT_LAYER: initLayer(numOfHiddenNeurons, numOfOutputs),
-    }
-
-def initLayer(numOfInputs, numOfOutputs):
-    return {
-        BIAS: np.random.rand(numOfOutputs),
-        WEIGHTS: np.random.rand(numOfOutputs, numOfInputs),
-    }
+def init(numOfInputs: int, numOfHiddenNeurons: int, numOfOutputs: int) -> Net:
+    return Net(
+        layer.init(numOfInputs, numOfHiddenNeurons),
+        layer.init(numOfHiddenNeurons, numOfOutputs),
+    )
 
 # ------------------------------------------------------------------------------
 
-def calc(net, input):
-    oHidden = calcLayer(net[HIDDEN_LAYER], input)
-    return calcLayer(net[OUTPUT_LAYER], oHidden)
+def calc(net: Net, input: np.ndarray) -> np.ndarray:
+    hiddenOutput = layer.calc(net.hiddenLayer, input)
+    return layer.calc(net.outputLayer, hiddenOutput)
 
-def calcError(net, input, expected):
+def calcError(net: Net, input: np.ndarray, want: np.ndarray) -> float:
     output = calc(net, input)
-    return e.error(output, expected)
+    return e.calc(output, want)
 
-def calcBatch(net, inputs):
-    return map(lambda x: calc(net, x), inputs)
+def calcBatch(net: Net, inputs: list[np.ndarray]) -> list[np.ndarray]:
+    return list(map(lambda input: calc(net, input), inputs))
 
-def calcBatchError(net, inputs, expecteds):
-    errors = map(lambda x, y: calcError(net, x, y), inputs, expecteds)
-    return np.array(errors).mean()
-
-def calcLayer(layer, input):
-    biased = layer[BIAS] + layer[WEIGHTS].dot(input)
-    return a.activation(biased)
+def calcBatchError(net: Net, inputs: list[np.ndarray], wants: list[np.ndarray]) -> float:
+    errors = list(map(lambda input, want: calcError(net, input, want), inputs, wants))
+    return np.mean(errors)
 
 # ------------------------------------------------------------------------------
 
-def train(net, input, expected, learningRate):
-    deltaNet = calcDeltaNet(net, input, expected)
-    return {
-        HIDDEN_LAYER: {
-            BIAS: net[HIDDEN_LAYER][BIAS] - learningRate * deltaNet[HIDDEN_LAYER][BIAS],
-            WEIGHTS: net[HIDDEN_LAYER][WEIGHTS] - learningRate * deltaNet[HIDDEN_LAYER][WEIGHTS],
-        },
-        OUTPUT_LAYER: {
-            BIAS: net[OUTPUT_LAYER][BIAS] - learningRate * deltaNet[OUTPUT_LAYER][BIAS],
-            WEIGHTS: net[OUTPUT_LAYER][WEIGHTS] - learningRate * deltaNet[OUTPUT_LAYER][WEIGHTS],
-        }
-    }
+def train(net: Net, input: np.ndarray, want: np.ndarray, learnRate: float) -> Net:
+    delta = _calcDelta(net, input, want)
+    return Net(
+        layer.applyDelta(net.hiddenLayer, delta.hiddenLayer, learnRate),
+        layer.applyDelta(net.outputLayer, delta.outputLayer, learnRate),
+    )
 
-def calcDeltaNet(net, input, expected):
-    # forward pass
-    hBiased = net[HIDDEN_LAYER][BIAS] + net[HIDDEN_LAYER][WEIGHTS].dot(input)
-    hOutput = a.activation(hBiased)
-    hActDeriv = a.activationDerivative(hBiased)
+def trainBatch(net: Net, inputs: list[np.ndarray], wants: list[np.ndarray], learnRate: float) -> Net:
+    pass
 
-    oBiased = net[OUTPUT_LAYER][BIAS] + net[OUTPUT_LAYER][WEIGHTS].dot(hOutput)
-    oOutput = a.activation(oBiased)
-    oActDeriv = a.activationDerivative(oBiased)
+# ------------------------------------------------------------------------------
 
-    errDeriv = e.errorDerivative(oOutput, expected)
+def _calcDelta(net: Net, input: np.ndarray, want: np.ndarray) -> Net:
+    (hOutput, hActDeriv) = layer.calcForTrain(net.hiddenLayer, input)
+    (oOutput, oActDeriv) = layer.calcForTrain(net.outputLayer, hOutput)
 
-    # backward pass
-    deltaBOut = errDeriv * oActDeriv
-    deltaWOut = mulVecAndTVec(deltaBOut, hOutput)
+    deltaOutputB = e.calcDerivative(oOutput, want) * oActDeriv
+    deltaOutputW = _mulVecAndTVec(deltaOutputB, hOutput)
 
-    deltaBHid = hActDeriv * net[OUTPUT_LAYER][WEIGHTS].transpose().dot(deltaBOut)
-    deltaWHid = mulVecAndTVec(deltaBHid, input)
+    deltaHiddenB = net.outputLayer.weights.transpose() @ deltaOutputB * hActDeriv
+    deltaHiddenW = _mulVecAndTVec(deltaHiddenB, input)
 
-    return {
-        HIDDEN_LAYER: {
-            BIAS: deltaBHid,
-            WEIGHTS: deltaWHid,
-        },
-        OUTPUT_LAYER: {
-            BIAS: deltaBOut,
-            WEIGHTS: deltaWOut,
-        }
-    }
+    return Net(
+        layer.Layer(deltaHiddenB, deltaHiddenW),
+        layer.Layer(deltaOutputB, deltaOutputW),
+    )
 
-def mulVecAndTVec(vector, transposedVector):
-    return np.array(map(lambda x: x * transposedVector, vector))
+def _mulVecAndTVec(vector: np.ndarray, transposedVector: np.ndarray) -> np.ndarray:
+    return np.array(list(map(lambda x: x * transposedVector, vector)))
 
-# - Testing --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Testing
 
 if __name__ == '__main__':
+    np.random.seed(1)
+
     net = init(2, 4, 2)
     inputs = [
         np.array([0,0]),
@@ -104,7 +80,7 @@ if __name__ == '__main__':
         np.array([1,0]),
         np.array([1,1]),
     ]
-    expecteds = [
+    wants = [
         np.array([1,0]),
         np.array([0,1]),
         np.array([0,1]),
@@ -113,11 +89,12 @@ if __name__ == '__main__':
 
     numOfCases = len(inputs)
 
-    for _ in range(10):
+    for _ in range(1):
         for i in range(numOfCases):
             input = inputs[i]
-            expected = expecteds[i]
-            net = train(net, input, expected, 0.1)
-            # print calcError(net, input, expected)
-        
-        print calcBatchError(net, inputs, expecteds)
+            want = wants[i]
+            net = train(net, input, want, .1)
+        result = calcBatch(net, inputs)
+        error = calcBatchError(net, inputs, wants)
+        # print(result)
+        print(error)
