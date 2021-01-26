@@ -18,8 +18,10 @@ python src/main.py
 
 ## Projektstruktur
 
-- `data/` enthält die Ziffern, die es zu erkennen gilt im CSV-Format.
-- `docs/` enthält die Dokumentation – vor allem wichtig ist die Datei `projekt.md`, welche die Abgabe für das Modul beinhaltet
+- `data/` enthält diverse Daten, die für die Simulation verwendet bzw. während der Simulation generiert werden.
+  - `digits/` enthält die Ziffern, die es zu erkennen gilt im CSV-Format.
+  - `simulations/` enthält die generierten Grafiken, die während des Ausführens des main-Skriptes erstellt werden.
+- `docs/` enthält die Dokumentation – vor allem wichtig ist die Datei `projekt.md`, welche die Abgabe für das Modul beinhaltet.
 - `src/` enthält alle Python-Skripte des Projektes.
   - `main.py` ist das zentrale Skript, welches die Lösung der Aufgabe enthält.
   - Alle anderen Dateien enthalten nur Hilfsfunktionen.
