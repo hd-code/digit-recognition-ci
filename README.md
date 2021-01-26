@@ -6,11 +6,27 @@ Dieses Repo enthält die Projektabgabe für das Fach "Computational Intelligence
 
 Die Skripte des Projektes sind in Python geschrieben. Es muss also Python ab Version 3 installiert sein.
 
+Zusätzlich wird die Bibliothek `numpy` verwendet, um Vektor- und Matrizenberechnungen schnell und effizient ausführen zu können. Diese kann, sofern noch nicht installiert, mittels diesem Befehl über PIP installiert werden: `pip install numpy`.
+
+## Ausführen
+
+Um das Hauptskript zu starten, welches die Ziffernerkennung durchführt, bitte folgenden Befehl im Terminal ausführen:
+
+```sh
+python src/main.py
+```
+
 ## Projektstruktur
+
+- `data/` enthält die Ziffern, die es zu erkennen gilt im CSV-Format.
+- `docs/` enthält die Dokumentation – vor allem wichtig ist die Datei `projekt.md`, welche die Abgabe für das Modul beinhaltet
+- `src/` enthält alle Python-Skripte des Projektes.
+  - `main.py` ist das zentrale Skript, welches die Lösung der Aufgabe enthält.
+  - Alle anderen Dateien enthalten nur Hilfsfunktionen.
 
 ## Testing
 
-In allen Dateien in `src` sind am Ende ein paar kleine Tests geschrieben, mit denen überprüft werden kann, ob die Funktionen richtig arbeiten.
+In allen Dateien in `src/` sind am Ende ein paar kleine Tests geschrieben, mit denen überprüft werden kann, ob die Funktionen richtig arbeiten.
 
 Um die Tests auszuführen, müssen die Dateien direkt mit Python als Main-Skripte ausgeführt werden. Z.B. in Bash-Shells kann das mit folgendem Befehl bewerkstelligt werden:
 
