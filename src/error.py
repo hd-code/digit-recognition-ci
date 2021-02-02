@@ -1,5 +1,4 @@
-# Diese Datei enthält die Fehlerfunktion, die für das neuronale Netz minimiert
-# werden soll.
+# Holds the error function, which is minimized.
 
 # ------------------------------------------------------------------------------
 
@@ -7,15 +6,17 @@ import numpy as np
 
 # ------------------------------------------------------------------------------
 
-# Fehlerfunktion: Mean squared error
-def calc(actual: np.ndarray, expected: np.ndarray) -> float:
+# Error function: Mean squared error.
+# Calculates the error between the actual vector and the expected vector.
+def mse(actual: np.ndarray, expected: np.ndarray) -> float:
     diff = actual - expected
     diff = diff * diff
     return diff.sum() / len(diff)
 
-# Ableitung der Fehlerfunktion – berechnet die Ableitung für jeden Index im
-# Vektor und gibt die jeweiligen Ableitungen als Vektor im ganzen zurück
-def calcDerivative(actual: np.ndarray, expected: np.ndarray) -> np.ndarray:
+# Derivative of Mean squared error function.
+# Calculates the derivative for each element in the vector and returns them all
+# in a vector as well.
+def mseDerivative(actual: np.ndarray, expected: np.ndarray) -> np.ndarray:
     return 2 * (actual - expected) / len(actual)
 
 # ------------------------------------------------------------------------------
@@ -28,10 +29,14 @@ if __name__ == '__main__':
     wantErr = 0.875
     wantDeriv = [0, 0.5, 0.75, 0.25]
 
-    gotErr = calc(inputAct, inputExp)
-    gotDeriv = calcDerivative(inputAct, inputExp)
+    print('\nerror.py:')
 
+    print('  test error function')
+    gotErr = mse(inputAct, inputExp)
     assert np.array_equal(gotErr, wantErr)
-    assert np.array_equal(wantDeriv, gotDeriv)
 
-    print('error.py => tests succeeded')
+    print('  test error function derivative')
+    gotDeriv = mseDerivative(inputAct, inputExp)
+    assert np.array_equal(gotDeriv, wantDeriv)
+
+    print('SUCCESS\n')
