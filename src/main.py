@@ -1,1 +1,0 @@
-print('silence is golden')
