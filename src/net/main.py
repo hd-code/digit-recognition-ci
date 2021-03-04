@@ -30,9 +30,6 @@ class Net:
     def __repr__(self):
         return '-- hidden layer: \n%s,\n\n-- output layer: \n%s\n' % (self.hiddenLayer, self.outputLayer)
 
-# Creates a new neural network with the given number of neurons on input, hidden
-# and output layer
-
 
 def init(numOfInputs: int, numOfHiddenNeurons: int, numOfOutputs: int) -> Net:
     """
