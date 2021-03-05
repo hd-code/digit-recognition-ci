@@ -1,5 +1,9 @@
 # Ziffernerkennung mittels neuronalem Perzeptron-Netz
 
+von Hannes Dröse
+
+Ziel meines Projektes ist die Erkennung von Ziffern in kleinen Pixelgrafiken mittels eines Perzeptron-Netzes.
+
 ## Aufgabenstellung
 
 Ziffern erkennen

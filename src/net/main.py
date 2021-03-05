@@ -1,7 +1,5 @@
-"""
-Defines the data structure for a neural network and methods to do operations on
-that network.
-"""
+"""Defines the data structure for a neural network and methods to do operations
+on that network."""
 
 # NOTE: This file is called `main.py` because otherwise it would collide with
 #       the module name `net`
@@ -32,14 +30,13 @@ class Net:
 
 
 def init(numOfInputs: int, numOfHiddenNeurons: int, numOfOutputs: int) -> Net:
-    """
-    Creates a new neural network instance with the given number of neurons on
-    the corresponding layer. The weights and biases are initialized randomly.
-    """
+    """Creates a new neural network instance with the given number of neurons on
+    the corresponding layer. The weights and biases are initialized randomly."""
     return Net(
         layer.init(numOfInputs, numOfHiddenNeurons),
         layer.init(numOfHiddenNeurons, numOfOutputs),
     )
+
 
 # ------------------------------------------------------------------------------
 
@@ -55,10 +52,8 @@ def calc(net: Net, input: np.ndarray) -> np.ndarray:
 
 
 def calcError(net: Net, input: np.ndarray, target: np.ndarray) -> float:
-    """
-    Runs a calculation on a neural network. It then calculates the error between
-    calculated and target output.
-    """
+    """Runs a calculation on a neural network. It then calculates the error
+    between calculated and target output."""
     output = calc(net, input)
     return e.mse(output, target)
 
@@ -69,10 +64,8 @@ def calcBatch(net: Net, inputs: list[np.ndarray]) -> list[np.ndarray]:
 
 
 def calcBatchError(net: Net, inputs: list[np.ndarray], targets: list[np.ndarray]) -> float:
-    """
-    Runs a calculation on a neural network for a batch of input vectors. It then
-    calculates the error between calculated and target outputs.
-    """
+    """Runs a calculation on a neural network for a batch of input vectors. It
+    then calculates the error between calculated and target outputs."""
     errors = list(map(lambda input, target: calcError(
         net, input, target), inputs, targets))
     return np.mean(errors)
@@ -82,8 +75,7 @@ def calcBatchError(net: Net, inputs: list[np.ndarray], targets: list[np.ndarray]
 
 
 def train(net: Net, input: np.ndarray, target: np.ndarray, learnRate: float) -> Net:
-    """
-    Executes one training iteration on the neural network for a single set of
+    """Executes one training iteration on the neural network for a single set of
     input and target values.
 
     The returned neural network is a new instance. The original network is not
@@ -97,8 +89,7 @@ def train(net: Net, input: np.ndarray, target: np.ndarray, learnRate: float) -> 
 
 
 def trainBatch(net: Net, inputs: list[np.ndarray], targets: list[np.ndarray], learnRate: float) -> Net:
-    """
-    Executes one training iteration on the neural network for a whole set of
+    """Executes one training iteration on the neural network for a whole set of
     input and target values.
 
     This is batch training, so the error for each set is calculated and then the
@@ -129,10 +120,8 @@ def trainBatch(net: Net, inputs: list[np.ndarray], targets: list[np.ndarray], le
 
 
 def _calcDelta(net: Net, input: np.ndarray, target: np.ndarray) -> Net:
-    """
-    Calculates the delta for both hidden and output layer of the network for the
-    given input and target vector.
-    """
+    """Calculates the delta for both hidden and output layer of the network for
+    the given input and target vector."""
     (hOutput, hActDeriv) = layer.calcForTrain(net.hiddenLayer, input)
     (oOutput, oActDeriv) = layer.calcForTrain(net.outputLayer, hOutput)
 
@@ -149,11 +138,9 @@ def _calcDelta(net: Net, input: np.ndarray, target: np.ndarray) -> Net:
 
 
 def _mulVecAndVecT(vector: np.ndarray, transposedVector: np.ndarray) -> np.ndarray:
-    """
-    Multiplies a vector x with a transposed vector y^T. The result is a matrix
-    which has as many rows as x has elements and as many columns as y has
-    elements.
-    """
+    """Multiplies a vector x with a transposed vector y^T. The result is a
+    matrix which has as many rows as x has elements and as many columns as y has
+    elements."""
     return np.array(list(map(lambda x: x * transposedVector, vector)))
 
 

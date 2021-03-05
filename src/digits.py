@@ -1,3 +1,8 @@
+"""This script loads the digits from the data/digits/ directory. It offers
+methods to filter these digits and transform them to different formats."""
+
+# ------------------------------------------------------------------------------
+
 import pandas as pd
 import numpy as np
 import os
@@ -6,6 +11,8 @@ import os
 
 
 class Digit:
+    """Helper class that represents a single digit."""
+
     def __init__(self, digit: int, kind: str, img: np.ndarray):
         self.digit = digit
         self.kind = kind
@@ -55,6 +62,12 @@ _allDigits = _loadAllDigits()
 
 
 def getDigits(digits=ALL_DIGITS, kinds=ALL_KINDS) -> list[Digit]:
+    """Returns a list of digits, that meet the given filters.
+
+    By default, all digits are returned. However, a set of `digits` or a set of
+    `kinds` can be specified. By doing so, only the digits that belong to the
+    sets are returned.
+    """
     global _allDigits
     return list(filter(
         lambda digit: digit.digit in digits and digit.kind in kinds,
@@ -63,6 +76,9 @@ def getDigits(digits=ALL_DIGITS, kinds=ALL_KINDS) -> list[Digit]:
 
 
 def extractInputAndOutput(digitSet: list[Digit]) -> tuple[list[float], list[float]]:
+    """Returns a tuple where the first element is a list of all input vectors
+    for the given digit set and the second element is a list of the
+    corresponding target vectors."""
     inputs = list(map(lambda digit: digit.getInputVector(), digitSet))
     targets = list(map(lambda digit: digit.getTargetVector(), digitSet))
     return (inputs, targets)
@@ -70,7 +86,6 @@ def extractInputAndOutput(digitSet: list[Digit]) -> tuple[list[float], list[floa
 
 # ------------------------------------------------------------------------------
 # Testing
-
 
 if __name__ == '__main__':
     numOfDigits = len(ALL_DIGITS) * len(ALL_KINDS)

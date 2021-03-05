@@ -1,3 +1,7 @@
+"""This is the main script, that trains a neural network for digit recognition."""
+
+# ------------------------------------------------------------------------------
+
 import digits as dg
 import net as nn
 
@@ -16,6 +20,7 @@ testSet = dg.getDigits(kinds={'evag'})
 
 
 # ------------------------------------------------------------------------------
+
 
 NUM_OF_HIDDEN = 20
 

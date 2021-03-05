@@ -1,6 +1,4 @@
-"""
-Implements the activation function for the neural network.
-"""
+"""Implements the activation function for the neural network."""
 
 # ------------------------------------------------------------------------------
 

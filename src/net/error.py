@@ -1,5 +1,4 @@
-"""
-Holds the error function. Shows, how much the neural network is off with its
+"""Holds the error function. Shows, how much the neural network is off with its
 prediction.
 
 This error function is minimized during training.

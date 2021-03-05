@@ -1,7 +1,5 @@
-"""
-Defines a data structure and methods for a single layers of a neural network.
-On this level both output and hidden layer work exactly the same.
-"""
+"""Defines a data structure and methods for a single layers of a neural network.
+On this level both output and hidden layer work exactly the same."""
 
 # ------------------------------------------------------------------------------
 
@@ -43,7 +41,7 @@ def init(numOfInputs: int, numOfOutputs: int) -> Layer:
 
 
 def calc(layer: Layer, input: np.ndarray) -> np.ndarray:
-    '''Runs a calculation for a single layer'''
+    """Runs a calculation for a single layer."""
     return a.sigmoid(layer.bias + layer.weights @ input)
 
 
