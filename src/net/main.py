@@ -28,6 +28,9 @@ class Net:
     def __repr__(self):
         return '-- hidden layer: \n%s,\n\n-- output layer: \n%s\n' % (self.hiddenLayer, self.outputLayer)
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
 
 def init(numOfInputs: int, numOfHiddenNeurons: int, numOfOutputs: int) -> Net:
     """Creates a new neural network instance with the given number of neurons on
