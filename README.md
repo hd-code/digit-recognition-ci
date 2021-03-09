@@ -5,8 +5,8 @@ This repo contains the project files for the course 'Computational Intelligence'
 ## Installation
 
 - have **Python** *version 3.9 or later* installed
-- make sure the Pip package manger is installed as well (comes together with python)
-- install Pipenv, which handles all additional dependencies: `pip install pipenv`
+- make sure the **Pip** package manger is installed as well (comes together with python)
+- install **Pipenv**, which handles all additional dependencies: `pip install pipenv`
 - now go to the project directory and run: `pipenv install`
 
 Now all dependencies were installed and you are ready to go.
@@ -40,7 +40,7 @@ The **demo app** is at `src/app.py`. It will start in an interactive window and 
 
 ## Testing
 
-All files in `src/` contain a testing section at the end of the file. These tests check if the software behaves as it should.
+All files except the demo app and the main script in `src/` contain a testing section at the end of the file. These tests check if the software behaves as it should.
 
 The tests are executed when a file is run as a main script. If you use a bash shell, you can execute all test by running the following command:
 

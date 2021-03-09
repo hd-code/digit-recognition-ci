@@ -1,52 +1,74 @@
 # Umsetzung in Python
 
-## Trainings- und Testdaten
+Dieses Projekt befindet sich in einem Git-Repository. Dort befinden sich alle Dateien des Projektes, inklusive Source-Code, Dokumentation usw. Das Repository ist unter diesem Link erreichbar:
 
-- Traingsdaten => Sets von 0-9: normal, klein, digital, digital-klein
-- Testdaten => evag
+<https://github.com/hd-code/digit-recognition-ci/>
 
-![Die Beispieldatensätze – verschiedene Grafiken von Ziffern zwischen 0 und 9](img/digits.jpg)
+## Projektübersicht
 
-## Neuronales Netz
+Damit das Projekt übersichtlich bleibt, ist es in Ordner und Unterordner gegliedert. Die Ordner sind:
 
-### Datenmodell
+- `data`
+  - `digits` – Hier liegen die Ziffern für die Trainingsdaten als CSV-Dateien.
+  - `simulations` – Hier werden die Ergebnisse einer Simulation gespeichert.
+- `docs` – Hier befindet sich die Dokumentation des Projektes (also faktisch dieses Dokument)
+- `src` – Hier befindet sich der Source-Code. Weitere Erklärungen dazu folgen in anschließenden Abschnitten
 
-- Net:
-  - hiddenLayer: Layer
-  - outputLayer: Layer
-- Layer:
-  - bias: Vektor
-  - weights: Matrix
+## Benötigte Software und Installation
 
-### Ermittlung der Neuronenzahl auf der versteckten Schicht
+Das Projekt ist in Python geschrieben. Es muss also **Python** ab *Version 3.9 oder höher* installiert sein, um die Skripte auszuführen.
 
-- Generierung verschiedener Netze
-- jeweils 100 Netze mit der gleichen Topologie
-- Netz mit geringstem Fehler wird behalten
-- Vergleich der Netze mit unterschiedlicher Topologie
-- Topologie mit geringstem Fehler wird gewählt
+Zusätzlich sollte **Pipenv** installiert sein. Pipenv kümmert sich um die Installation aller weiteren benötigten Software-Komponenten. Zusammen mit Python kommt der Package-Manager **Pip**. Mittels Pip kann Pipenv sehr einfach installiert werden, dazu muss über die Kommandozeile folgendes ausgeführt werden:
 
-## Trainingsprozess
+```sh
+pip install pipenv
+```
 
-### Backpropagation
+Nun ist Pipenv installiert. Damit können nun alle weiteren Abhängigkeiten installiert werden. Dazu bitte in der Kommandozeile in den Ordner des Projektes wechseln und diesen Befehl ausführen:
 
-Vereinfacht:
+```sh
+pipenv install
+```
 
-\begin{align*}
-\delta b_o &= mse'(\vec o, \vec t) \cdot sig'(\vec b_o + W_o \cdot \vec h) \\
-\delta W_o &= \delta b_o \cdot \vec h^T \\ \\
-\delta b_h &= \delta b_o \cdot W_o^T \cdot sig'(\vec b_h + W_h * \vec i) \\
-\delta W_h &= \delta b_h \cdot \vec i^T
-\end{align*}
+Dadurch werden die weiteren benötigten Software-Komponenten installiert. Diese sind:
 
-### Lernrate
+- `numpy` – Eine Bibliothek für schnelles und effizientes Rechnen mit Vektoren und Matrizen.
+- `pandas` – Eine Bibliothek zum einfachen Laden von Datendateien wie CSV oder JSON.
+- `PySimpleGui` – Eine Bibliothek um interaktive Programme mit einer GUI zu erstellen.
 
-...
+## Module und Packages
 
-## Interaktives Ergebnis-Programm
+Python erlaubt die Gliederung des Source-Codes in Module (einzelne Dateien) und Packages (ein Ordner mit mehreren Dateien, die zu einer Einheit zusammengefasst werden).
 
-- zuerst Erstellung und Training des Netzes (separates Skript)
-- finales Netz wird gespeichert
-- kleines GUI Programm => lädt Netz
-- über GUI können Pixelgrafiken erstellt werden
-- Netz berechnet erkannte Ziffer => wird angezeigt
+
+
+
+
+
+### Digits
+
+- loading csv files from data
+- filtern nach Ziffern oder Arten
+
+### Net
+
+- Klasse mit Layers
+- Layers sind separat
+- Aktivierungsfunktion
+- Error-Funktion
+
+### Hauptprogramm
+
+- main script
+- laden von Ziffern
+- Netz initialisieren
+- trainieren
+- Speichern der Simulationen
+- Speichern des trainierten Netzes
+- => Simulation
+
+### Demo-App
+
+- interaktives GUI Programm
+- lädt Netz aus letzter Simulation
+- Pixelgrafik => Pixel anklicken to toggle

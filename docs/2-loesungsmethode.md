@@ -10,7 +10,7 @@ Häufig werden die Beispieldaten in Trainings- und Testdaten unterteilt. Trainin
 
 ## Neuronale Netze
 
-Der Algorithmus zur Lösung der Aufgabe wird ein **künstliches neuronales Netz** sein. Neuronale Netze sind mathematische Konstrukte, welche beliebige Funktionen mithilfe von Beispieldaten approximieren können. Die Erkennung von Ziffern ist eben eine Funktion, welche Pixelwerte entgegennimmt und die erkannte Ziffer als Ausgabe zurückliefert. [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]
+Der Algorithmus zur Lösung der Aufgabe ist ein **künstliches neuronales Netz**. Neuronale Netze sind mathematische Konstrukte, welche beliebige Funktionen mithilfe von Beispieldaten approximieren können. Die Erkennung von Ziffern ist eben eine Funktion, welche Pixelwerte entgegennimmt und die erkannte Ziffer als Ausgabe zurückliefert. [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]
 
 Neuronale Netze sind besonders für die Erkennung von Mustern (vor allem von Ziffern und Buchstaben) geeignet. [vgl. @lammel2020, Kap. 6.3 Typische Anwendungen]
 
@@ -22,13 +22,13 @@ Die Inspiration für neuronale Netze stammt aus dem menschlichen Gehirn. Dieses 
 
 Ein einzelnes Neuron wird nun mathematisch mit einem sog. Perzeptron nachgebildet. Das Perzeptron bekommt eine feste Menge an Eingabewerten. Diese werden mit Gewichten versehen, welche die unterschiedlich starken Synapsen darstellen. Die Eingabewerte werden mit den Gewichten multipliziert und anschließend aufsummiert. Hinzu wird ein weiterer Wert addiert – der sog. Bias. Dieser stellt den Schwellenwerte zur Aktivierung eines Neurons dar. Zum Schluss wird auf diesen Wert eine nicht-lineare Aktivierungsfunktion angewandt (näheres im nächsten Abschnitt). [vgl. @lammel2020, Kap. 5.1 Das künstliche Neuron]
 
-Zusammengefasst ist das Aktivierungslevel bzw. der Output des Neurons $o$ wie folgt definiert:
+Zusammengefasst ist das Aktivierungslevel bzw. der Output des Neurons wie folgt definiert:
 
 $$
-o = a(\vec i \cdot \vec w + b)
+y = \phi(\vec w \cdot \vec x + b)
 $$
 
-Wobei $a$ die Aktivierungsfunktion, $\vec i$ die Eingabewerte (input), $\vec w$ die Gewichte und $b$ den Bias darstellt.
+Wobei $\phi$ die Aktivierungsfunktion, $\vec x$ die Eingabewerte (input), $\vec w$ die Gewichte und $b$ den Bias darstellt.
 
 ### Aktivierungsfunktion
 
@@ -42,7 +42,7 @@ Eine der populärsten Funktionen in neuronalen Netzen ist die **logistische Funk
 
 ![Die logistische Funktion zwischen -10 und 10](img/sigmoid.png){width=60%}
 
-Für dieses Projekt wird daher ausschließlich die **logistische Funktion** und ihre Ableitung verwendet werden.
+Für dieses Projekt wird daher ausschließlich die **logistische Funktion** und ihre Ableitung verwendet.
 
 \begin{align*}
 sig(x) &= \frac{1}{1+e^{-x}} \\
@@ -51,20 +51,19 @@ sig'(x) &= sig(x) * (1 - sig(x))
 
 ### Vorwärtsgerichtete neuronale Netze
 
-Durch die Zusammenschaltung mehrerer Neuronen entsteht nun ein Netz. Sehr geläufig sind hierbei vorwärtsgerichtete Netze. Dabei werden mehrere Neuronen zu einer sog. Schicht zusammengefasst. Innerhalb einer Schicht besteht keine Verbindung zwischen den Neuronen. Die Schichten werden in einer festen Reihenfolge nacheinander angeordnet. Jedes Neuron einer Schicht wird mit jedem Neuron der Folgeschicht verbunden. Die folgende Abbildung zeigt eine schematische Darstellung eines solchen Netzes:
+Durch die Zusammenschaltung mehrerer Neuronen entsteht nun ein Netz. Sehr geläufig sind hierbei **vorwärtsgerichtete Netze**. Dabei werden mehrere Neuronen zu einer sog. Schicht zusammengefasst. Innerhalb einer Schicht besteht keine Verbindung zwischen den Neuronen. Die Schichten werden in einer festen Reihenfolge nacheinander angeordnet. Jedes Neuron einer Schicht wird mit jedem Neuron der Folgeschicht verbunden. Die folgende Abbildung zeigt eine schematische Darstellung eines solchen Netzes:
 
 ![Ein vorwärtsgerichtetes Netz mit mehreren Schichten. Grafik aus [@sutton2018]](img/net-with-layers.png){width=90%}
 
-Die weißen Kreise symbolisieren ein Neuron. Dabei sind die Neuronen auf der ersten (linken) Schicht lediglich Input-Neuronen. Diese bekommen also einfach die Inputwerte des Netzes übergeben. Alle Neuronen auf den Folgeschichten sind echte Neuronen wie sie zuvor beschrieben worden sind. Diese Werte werden nun über gewichtete Verbindungen (Kanten) an die Folgeschichten weitergeleitet. Die nächsten zwei Schichten sind sog. versteckte Schichten und die letzte ist die Ausgabe-Schicht. Das Netz it also in der Lage einen Vektor an Eingabewerten zu verarbeiten und auch einen Vektor an Ausgabewerten zurückzugeben. [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]
+Die weißen Kreise symbolisieren ein Neuron. Dabei sind die Neuronen auf der ersten (linken) Schicht lediglich Input-Neuronen. Diese bekommen also einfach die Inputwerte des Netzes übergeben. Alle Neuronen auf den Folgeschichten sind "echte" Neuronen wie sie zuvor beschrieben worden sind. Diese Werte werden nun über gewichtete Verbindungen (Kanten) an die Folgeschichten weitergeleitet. Die nächsten zwei Schichten sind sog. versteckte Schichten und die letzte ist die Ausgabe-Schicht. Das Netz ist also in der Lage einen Vektor an Eingabewerten zu verarbeiten und auch einen Vektor an Ausgabewerten zurückzugeben. [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]
 
-*=> Berechnung im Netz:*
+Die Berechnung des Ausgabe-Vektors einer Schicht setzt sich also aus den einzelnen Berechnungen für jedes einzelne Neuron zusammen. Da die Neuronen auf einer Schicht nicht miteinander verbunden sind, kann die Berechnung mit Vektoren und Matrizen umgesetzt werden. Die Mathematik dahinter ist dadurch recht elegant. Anstatt die Gewichte und den Bias für jedes Neuron separat zu speichern, kann eine Matrix $W$ für die Gewichte und ein Vektor $\vec b$ für die Biaswerte jedes Neurons verwendet werden. Die Gewichtsmatrix enthält die Gewichte zwischen den Neuronen der Schichten. Eine Spalte ist dabei dem Neuron auf der vorherigen, eine Zeile dem Neuron der Folgeschicht zugeordnet. Dadurch lässt sich die Ausgabe einer einzelnen Schicht wiefolgt berechnen:
 
-\begin{align*}
-\vec h &= sig(\vec b_h + W_h * \vec i) \\
-\vec o &= sig(\vec b_o + W_o * \vec h) \\
-\text{also:} \\
-\vec o &= sig(\vec b_o + W_o * sig(\vec b_h + W_h * \vec i))
-\end{align*}
+$$
+\vec y = sig(\vec b + W * \vec x)
+$$
+
+$\vec x$ sind die Eingabewerte und $sig()$ ist die sigmoide Aktivierungsfunktion. Zu beachten ist dabei, dass die Aktivierungsfunktion auf jeden Wert im Vektor einzeln angewandt wird. Die Ausgabe $\vec y$ ist also ebenfalls ein Vektor.
 
 ### Topologie des Netzes
 
@@ -75,6 +74,18 @@ Es gibt 10 Ziffern (von 0 bis 9), die erkannt werden können. Auf der *Ausgabesc
 Eine versteckte Schicht ist vollkommen ausreichend, damit ein neuronales Netz jede beliebige Funktion darstellen kann. Zumindest wenn nicht-lineare Aktivierungsfunktionen verwendet werden [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]. Daher wird in diesem Projekt auch nur mit *einer versteckten Schicht* gearbeitet.
 
 Für die Anzahl der Neuronen auf der versteckten Schicht gibt es kein Patentrezept. Je mehr Neuronen es sind, desto genauer kann die Zielfunktion gelernt werden. Allerdings werden die Berechnungen aufwendiger. Gleichzeitig sinkt die Fähigkeit des Netzes, Generalisierungen vorzunehmen [vgl. @lammel2020, Kap. 6.5.1 Die Größe der inneren Schicht]. Für dieses Projekt wird daher ein stark vereinfachtes Vorgehen genutzt werden: zunächst werden verschiedene Netze mit verschiedene Anzahlen von Neuronen auf der versteckten Schicht generiert. Das Netz, welches direkt den kleinsten Fehler aufweist, wird weiterverwendet.
+
+Daraus folgt, dass die Berechnung der Ausgabe $\vec y$ des gesamten Netzes für die Eingabe $\vec i$ wiefolgt lautet:
+
+$$
+\vec y = sig(\vec b_o + W_o * sig(\vec b_h + W_h * \vec x))
+$$
+
+Die Bezeichner geben die jeweilige Schicht zu welcher ein Wert gehört. $\vec b_o$ sind also bspw. die Bias-Werte auf der Output-Schicht oder $W_h$ bezeichnet die Gewichtsmatrix der versteckten Schicht (von engl. *hidden layer*).
+
+
+
+
 
 ## Gradientenabstiegsverfahren
 
@@ -92,25 +103,29 @@ Für die Anzahl der Neuronen auf der versteckten Schicht gibt es kein Patentreze
 - Fehlerfunktion um Abweichung zwischen berechnetem und erwartetem Output darzustellen
   - => je höher, desto schlechter
 - Minimum der Funktion gesucht
+- positive und negative Abweichungen sollten sich nicht ausgleichen
 - sehr geläufig: Mean Squared Error
 - Vorteil: Vorzeichen der Differenzen spielen keine Rolle, gut differenzierbar
 
 $$
-mse(\vec o, \vec t) = \frac{1}{n} * \sum (o_i - t_i)^2 \\
-mse'_i(\vec o, \vec t) = \frac{2}{n} * (o_i - t_i)
+E(\vec y, \vec z) = \frac{1}{n} * \sum (y_i - z_i)^2
+$$
+
+$$
+E'_i(\vec y, \vec z) = \frac{2}{n} * (y_i - z_i)
 $$
 
 ### Anwendung im neuronalen Netz
 
 $$
-W_{neu} = W_{alt} - \lambda \cdot \delta W
+W_{neu} = W_{alt} - \lambda \cdot \Delta W
 $$
 
 \begin{align*}
-\delta b_o &= mse'(\vec o, \vec t) * sig'(\vec b_o + W_o * \vec h) \\
-\delta W_o &= mse'(\vec o, \vec t) * sig'(\vec b_o + W_o * \vec h) *  \vec h^T \\ \\
-\delta b_h &= mse'(\vec o, \vec t) * sig'(\vec b_o + W_o * \vec h) * W_o^T * sig'(\vec b_h + W_h * \vec i) \\
-\delta W_h &= mse'(\vec o, \vec t) * sig'(\vec b_o + W_o * \vec h) * W_o^T * sig'(\vec b_h + W_h * \vec i) * \vec i^T
+\delta b_o &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) \\
+\delta W_o &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) *  \vec h^T \\ \\
+\delta b_h &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) * W_o^T * sig'(\vec b_h + W_h * \vec x) \\
+\delta W_h &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) * W_o^T * sig'(\vec b_h + W_h * \vec x) * \vec x^T
 \end{align*}
 
 ### Batch-Learning
