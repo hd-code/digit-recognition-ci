@@ -1,35 +1,56 @@
 # Digit Recognition – Computational Intelligence
 
-This repo contains the project files for the course 'Computational Intelligence' at the University of Applied Science Erfurt.
-The goal is to programm a neural network that recognizes arabic numbers from 0 to 9 in small pixel graphics.
+This repo contains the project files for the course 'Computational Intelligence' at the University of Applied Science Erfurt. The goal is to programm a neural network that recognizes arabic numbers from 0 to 9 in small pixel graphics (5x7).
 
 ## Installation
 
-Following software is needed:
+- have **Python** *version 3.9 or later* installed
+- make sure the **Pip** package manger is installed as well (comes together with python)
+- install **Pipenv**, which handles all additional dependencies: `pip install pipenv`
+- now go to the project directory and run: `pipenv install`
 
-- **Python** version 3.8 or later – with python comes `pip`, which can be used to install all the other dependencies
-- **Jupyter Notebooks** for an interactive environment – install with: `pip install jupyter`
-- **Numpy** for efficient vector and matrix calculus – install with: `pip install numpy`
+Now all dependencies were installed and you are ready to go.
 
 ## Usage
 
-Just start the Jupyter Notebook, go to the `notebooks/` folder and have fun with the notebooks within. To start the notebook just run this in the terminal: `jupyter run`. Now Jupyter starts and the Notebook will open in your web browser.
+There are two applications: the **training script** and the **demo app**.
+
+The **training script** is at `src/main.py`. It will load the training and test digits and then create a neural network and perform the training. The results will be shown in various plots during the execution of the script. In the end, the results are stored in `data/simulations/<timestamp>`, where `<timestamp>` is the unix timestamp when the script was run. The results include the trained neural network.
+
+The **demo app** is at `src/app.py`. It will start in an interactive window and load the latest generated neural network from the simulations directory (see above). There is a pixel grid on the left. By clicking a pixel it can be toggled (empty/filled). Next to the grid, the results from the calculations on the neural network are shown. Here you can see, which digit the algorithm did recognize.
+
+*Note:* The scripts have to be run from `pipenv`, otherwise the dependencies will not be available:
+
+- training script: `pipenv run python src/main.py`
+- demo app: `pipenv run python src/app.py`
 
 ## Project Structure
 
-- `data/` contains all kinds of data needed for the project
-  - `digits/` contains the digits to be recognized in CSV format
-  - `simulations/` not used yet...
-- `docs/` contains the project documentation. Most important is `projekt.md`, which is the final document that will be graded.
-- `notebooks` contains all Jupyter Notebooks, which execute the actual digit recognition task
-- `src/` contains the implementation of the neural network in form of a flexible, reusable software library
+- `data/`
+  - `digits/`: the digits to be recognized by the network in CSV format
+  - `digits.numbers`: file for Apple Numbers, which was used to create the digits
+  - `simulations/`: not used yet...
+- `docs/`: the documentation of the project in german
+  - `projektabgabe.pdf`: the final report that was graded
+- `src/`
+  - `app.py`: the demo app
+  - `digits.py`: loads and exposes the digits from `data/digits/`
+  - `main.py`: the training script
+  - `net/`: the implementation of a neural network as a flexible library
 
 ## Testing
 
-All files in `src/` contain a testing section at the end of the file. These tests check if the software behaves as it should.
+All files except the demo app and the main script in `src/` contain a testing section at the end of the file. These tests check if the software behaves as it should.
 
 The tests are executed when a file is run as a main script. If you use a bash shell, you can execute all test by running the following command:
 
 ```sh
-for f in src/*.py; do python $f; done
+files=(src/digits.py src/net/[^_]*.py)
+for f in $files; do PYTHONPATH=src pipenv run python $f; done
+```
+
+To run only a single file's tests, execute:
+
+```sh
+PYTHONPATH=src pipenv run python <path-to-file>.py
 ```

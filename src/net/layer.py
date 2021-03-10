@@ -1,72 +1,97 @@
-# Defines a data structure and methods for a single layers of a neural network.
+"""Defines a data structure and methods for a single layers of a neural network.
+On this level both output and hidden layer work exactly the same."""
 
 # ------------------------------------------------------------------------------
 
-import activation as a
+import net.activation as a
+
 import numpy as np
 
 # ------------------------------------------------------------------------------
 
-# Layer is a single layer in a neural network.
-# 'bias' is a vector, 'weights' is a matrix.
+
 class Layer:
+    """A single layer (hidden or output) in a neural network.
+
+    Properties
+    - `bias` is a vector
+    - `weights` is a matrix
+    """
+
     def __init__(self, bias: np.ndarray, weights: np.ndarray):
         self.bias = bias
         self.weights = weights
+
     def __repr__(self):
         return 'bias: %s\nweights: \n%s' % (self.bias, self.weights)
+
     def __eq__(self, other):
         return str(self) == str(other)
 
-# Creates a new Layer with random bias and weights.
+
 def init(numOfInputs: int, numOfOutputs: int) -> Layer:
+    """Creates a new Layer with random bias and weights."""
     return Layer(
         np.random.rand(numOfOutputs) * 2 - 1,
         np.random.rand(numOfOutputs, numOfInputs) * 2 - 1,
     )
 
+
 # ------------------------------------------------------------------------------
 
-# Runs a calculation for a single layer
+
 def calc(layer: Layer, input: np.ndarray) -> np.ndarray:
+    """Runs a calculation for a single layer."""
     return a.sigmoid(layer.bias + layer.weights @ input)
 
-# Only used for training. Returns layer output and its derivatives as a tuple.
+
 def calcForTrain(layer: Layer, input: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Only used for training. Returns layer output and its derivatives as a tuple."""
     biased = layer.bias + layer.weights @ input
     return (a.sigmoid(biased), a.sigmoidDerivative(biased))
 
-# Returns a new layer instance, where the 'delta' is applied to the given 'layer'
-# with regards to the 'learnRate'.
+
 def applyDelta(layer: Layer, delta: Layer, learnRate: float) -> Layer:
+    """Applies the delta to the given layer.
+
+    The delta is multiplied by the learning rate and then subtracted from the
+    original layer. The function returns a new Layer instance, so the passed
+    original layer is not altered.
+    """
     return Layer(
         layer.bias - delta.bias * learnRate,
         layer.weights - delta.weights * learnRate,
     )
 
+
 # ------------------------------------------------------------------------------
 # Testing
 
 if __name__ == "__main__":
-    np.random.seed(0) # seed the random number generator to always get the same values
+    # seed the random number generator to always get the same values
+    np.random.seed(0)
 
-    numOfInputs  = 2
+    numOfInputs = 2
     numOfOutputs = 3
-    learnRate    = 0.1
-    input = np.array([1,0])
+    learnRate = 0.1
+    input = np.array([1, 0])
 
     wantLayer = Layer(
         np.array([0.09762701, 0.43037873, 0.20552675]),
-        np.array([[0.08976637, -0.1526904], [0.29178823, -0.12482558], [0.783546, 0.92732552]]),
+        np.array([[0.08976637, -0.1526904],
+                  [0.29178823, -0.12482558],
+                  [0.783546, 0.92732552]]),
     )
     wantDelta = Layer(
         np.array([-0.23311696, 0.58345008, 0.05778984]),
-        np.array([[0.13608912, 0.85119328], [-0.85792788, -0.8257414], [-0.95956321, 0.66523969]]),
+        np.array([[0.13608912, 0.85119328],
+                  [-0.85792788, -0.8257414],
+                  [-0.95956321, 0.66523969]]),
     )
     wantCalcResult = np.array([0.54671173, 0.67308402, 0.72890473])
-    wantCalcDeriv  = np.array([0.24781801, 0.22004192, 0.19760262])
+    wantCalcDeriv = np.array([0.24781801, 0.22004192, 0.19760262])
 
-    snapshotResult ='''bias: [0.1209387  0.37203373 0.19974777]\nweights: \n[[ 0.07615745 -0.23780973]\n [ 0.37758101 -0.04225144]\n [ 0.87950232  0.86080155]]'''
+    snapshotResult = '''bias: [0.1209387  0.37203373 0.19974777]\nweights: \n[[ 0.07615745 -0.23780973]\n [ 0.37758101 -0.04225144]\n [ 0.87950232  0.86080155]]'''
 
     print('\nlayer.py:')
 

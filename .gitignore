@@ -1,5 +1,5 @@
-# jupyter
-.ipynb_checkpoints/
+# IDEs
+.vscode
 
 # macOS
 .DS_Store
