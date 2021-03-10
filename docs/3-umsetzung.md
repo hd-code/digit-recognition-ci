@@ -40,17 +40,17 @@ Dadurch werden die weiteren benötigten Software-Komponenten installiert. Diese 
 
 Python erlaubt die Gliederung des Source-Codes in Module (einzelne Dateien) und Packages (ein Ordner mit mehreren Dateien, die zu einer Einheit zusammengefasst werden).
 
+...
 
 
 
 
-
-### Digits
+### Digits-Module
 
 - loading csv files from data
 - filtern nach Ziffern oder Arten
 
-### Net
+### Net-Package
 
 - Klasse mit Layers
 - Layers sind separat

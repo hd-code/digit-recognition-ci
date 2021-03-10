@@ -4,7 +4,7 @@
 
 Das Erkennen von Ziffern ist eine recht komplexe Aufgabe. Sie lässt sich nur sehr schwierig mittels festen Regeln umsetzen. Das liegt nicht zu letzt an einer Vielzahl von Schriftarten und Darstellungsformen für Ziffern. Anstatt ein sehr komplexes und umfangreiches Regelwerk zu entwickeln, wird dieses Projekt mittels **maschinellem Lernen** realisiert. Dazu wird anhand von Beispieldaten vom Computer ein Modell zur Lösung der Aufgabe erstellt. Dabei kommen Algorithmen zum Einsatz, welche in der Lage sind, aus den Beispieldaten die entsprechenden Regeln selbstständig abzuleiten. [vgl. @papp2019, Kap. 6 Machine Learning]
 
-Im Speziellen setzt dieses Projekt auf das **Überwachte Lernen** (engl. Supervised Learning). Das heißt, die Beispieldaten bestehen aus Paaren von Eingabe- und erwarteten Ausgabewerten. Der Algorithmus soll nach dem Training in der Lage sein, die Eingabewerte korrekt auf die erwarteten Ausgaben abzubilden. Dabei soll der Algorithmus gleichzeitig eine Verallgemeinerung durchführen. Dadurch sollen auch Eingabewerte richtig verarbeitet werden, die nicht in den Beispieldaten enthalten gewesen sind. [vgl. @papp2019, Kap. 5.2.1 Überwachtes Lernen]
+Im Speziellen setzt dieses Projekt auf das **Überwachte Lernen** (engl. Supervised Learning). Das heißt, die Beispieldaten bestehen aus Paaren von Eingabe- und erwarteten Ausgabewerten. Der Algorithmus soll nach dem Training in der Lage sein, die Eingabewerte korrekt auf die erwarteten Ausgaben abzubilden. Dabei soll der Algorithmus gleichzeitig eine Verallgemeinerung/Generalisierung durchführen. Dadurch sollen auch Eingabewerte richtig verarbeitet werden, die nicht in den Beispieldaten enthalten gewesen sind. [vgl. @papp2019, Kap. 5.2.1 Überwachtes Lernen]
 
 Häufig werden die Beispieldaten in Trainings- und Testdaten unterteilt. Trainingsdaten werden für das Training des Algorithmus verwendet. Die Testdaten werden nach dem Training verwendet. Damit wird überprüft, ob auch noch nicht gesehene Daten richtig zugeordnet werden können. [vgl. @papp2019, Kap. 5.6 Wie gut ist der Algorithmus?]
 
@@ -73,7 +73,7 @@ Es gibt 10 Ziffern (von 0 bis 9), die erkannt werden können. Auf der *Ausgabesc
 
 Eine versteckte Schicht ist vollkommen ausreichend, damit ein neuronales Netz jede beliebige Funktion darstellen kann. Zumindest wenn nicht-lineare Aktivierungsfunktionen verwendet werden [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]. Daher wird in diesem Projekt auch nur mit *einer versteckten Schicht* gearbeitet.
 
-Für die Anzahl der Neuronen auf der versteckten Schicht gibt es kein Patentrezept. Je mehr Neuronen es sind, desto genauer kann die Zielfunktion gelernt werden. Allerdings werden die Berechnungen aufwendiger. Gleichzeitig sinkt die Fähigkeit des Netzes, Generalisierungen vorzunehmen [vgl. @lammel2020, Kap. 6.5.1 Die Größe der inneren Schicht]. Für dieses Projekt wird daher ein stark vereinfachtes Vorgehen genutzt werden: zunächst werden verschiedene Netze mit verschiedene Anzahlen von Neuronen auf der versteckten Schicht generiert. Das Netz, welches direkt den kleinsten Fehler aufweist, wird weiterverwendet.
+Für die Anzahl der Neuronen auf der versteckten Schicht gibt es kein Patentrezept. Je mehr Neuronen es sind, desto genauer kann die Zielfunktion gelernt werden. Allerdings werden die Berechnungen aufwendiger. Gleichzeitig sinkt die Fähigkeit des Netzes, Generalisierungen vorzunehmen. Man spricht hier vom sog. **Overfitting**. Das Netz "lernt" eher die Beispieldaten auswendig, als den dahinterliegenden Algorithmus zu finden [vgl. @lammel2020, Kap. 6.5.1 Die Größe der inneren Schicht]. Für dieses Projekt wird daher ein stark vereinfachtes Vorgehen genutzt werden: zunächst werden verschiedene Netze mit verschiedene Anzahlen von Neuronen auf der versteckten Schicht generiert. Das Netz, welches direkt den kleinsten Fehler aufweist, wird weiterverwendet.
 
 Daraus folgt, dass die Berechnung der Ausgabe $\vec y$ des gesamten Netzes für die Eingabe $\vec i$ wiefolgt lautet:
 
@@ -83,53 +83,65 @@ $$
 
 Die Bezeichner geben die jeweilige Schicht zu welcher ein Wert gehört. $\vec b_o$ sind also bspw. die Bias-Werte auf der Output-Schicht oder $W_h$ bezeichnet die Gewichtsmatrix der versteckten Schicht (von engl. *hidden layer*).
 
-
-
-
-
 ## Gradientenabstiegsverfahren
 
-- NN sind parametrisierbar über die Gewichte und Bias auf den verschiedenen Schichten
-- Um optimale Parameter zu finden, können verschiedeneste Lernfahren verwendet werden.
-- gängistes: Gradientenabstiegsverfahren
+Nun stellt sich die Frage, wie das neuronale Netz die gesuchte Funktion approximiert. Die Gewichte und Biaswerte der versteckten und der Output-Schicht müssen richtig eingestellt werden, damit das Netz die Ziffernerkennung durchführen kann. Eines der gängigsten Lernverfahren für diese Aufgabe ist das **Gradientenabstiegsverfahren**. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren]
 
 ### Grundprinzip
 
-- Minimum einer Funktion gesucht
-- Annäherung durch Bewegung entgegen des Gradienten (Anstieg)
+Gradientenabstiegsverfahren werden verwendet, um das Minimum einer Funktion zu finden. Man beginnt an einem zufälligen Punkt auf der Funktion. Nun wird der *Anstieg* (auch Gradient genannt) in diesem Punkt berechnet. Da ein Minimum der kleinste mögliche Wert einer Funktion ist, bewegt man sich nun entgegengesetzt des Anstiegs entlang der Funktion. Je stärker der Anstieg, umso größer fällt auch der Schritt in die entgegengesetzte Richtung aus. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren]
+
+*TODO: Grafik einfügen*
+
+Das neuronale Netz muss nun also so dargestellt werden, dass die Gewichte und Biaswerte als Parameter für eine Funktion dienen. Gleichzeitig muss diese Funktion ein Minimum haben, welches gleichzeitig bei der Lösung der Aufgabe hilft. Die Lösung: man definiert eine sog. **Fehlerfunktion**, welche die Abweichung zwischen den berechneten Ausgaben des neuronalen Netzes und den erwarteten Ausgabewerten aus den Beispieldaten bestimmt. Die verschiedenen Fehlerwerte zwischen dem Ausgabe- und dem erwarteten Vektor werden in einen einzelnen Fehlerwert komprimiert. Da die Ausgabe des Netzes einzig von den Gewichten und Biaswerten beeinflusst wird, kann durch die Anpassung der selbigen die Differenz und damit der Fehler *minimiert* werden.. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren; und @patterson2017, Kap. 2 Foundations of Neural Networks and Deep Learning, Abs. Loss Functions]
 
 ### Fehlerfunktion
 
-- Fehlerfunktion um Abweichung zwischen berechnetem und erwartetem Output darzustellen
-  - => je höher, desto schlechter
-- Minimum der Funktion gesucht
-- positive und negative Abweichungen sollten sich nicht ausgleichen
-- sehr geläufig: Mean Squared Error
-- Vorteil: Vorzeichen der Differenzen spielen keine Rolle, gut differenzierbar
+Auch für die Fehlerfunktion gibt es große Fülle an Möglichkeiten. Eine der universellsten ist die **Mean Squared Error** Funktion (zu deutsch: die Funktion der durchschnittlichen Fehlerquadrate). Diese Funktion bietet mehrere Vorteile: Zum Einen sind die Differenzen nicht vorzeichenbehaftet. Dadurch heben sich zwei fehlerhafte Neuronen mit entgegengesetzten Fehlerwerten nicht gegenseitig auf. Zum Anderen sind die Fehlerwerte für große Abweichungen sehr groß, kleinere Abweichung werden hingegen weniger stark gewichtet. Dadurch ist die Gefahr des Overfitting geringer und das Netz neigt zu einer besseren Generalisierung. Zu guter Letzt sei erwähnt, dass diese Funktion gut differenzierbar ist. [vgl. @patterson2017, Kap. 2 Foundations of Neural Networks and Deep Learning, Abs. Loss Functions]
 
-$$
-E(\vec y, \vec z) = \frac{1}{n} * \sum (y_i - z_i)^2
-$$
+\begin{align*}
+E(\vec y, \vec\hat y) &= \frac{1}{n} * \sum (y_i - \hat y_i)^2 \\
+E'_i(\vec y, \vec\hat y) &= \frac{2}{n} * (y_i - \hat y_i)
+\end{align*}
 
-$$
-E'_i(\vec y, \vec z) = \frac{2}{n} * (y_i - z_i)
-$$
+Die Ableitung der Mean Squared Error Funktion ist hier nur für das i-te Ausgabeneuron dargestellt. Natürlich wird sie auf alle Ausgabeneuronen angewendet, sodass man einen Gradienten für jedes der Ausgabeneuronen erhält.
 
 ### Anwendung im neuronalen Netz
+
+Man beginnt mit zufälligen Werten für die Gewichte und Bias. Als nächstes wird der Gradient $\Delta$ zu jedem veränderbaren Parameter ermittelt. Anschließend wird dieser Gradient mit einer **Lernrate** $\lambda$ multipliziert. Das Ergebnis wird nun vom ursprünglichen Wert abgezogen. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren]
 
 $$
 W_{neu} = W_{alt} - \lambda \cdot \Delta W
 $$
 
+Da es verschiedene Gewichte und Biaswerte auf den verschiedenen Schichten gibt, muss die Fehlerfunktion stets nach dem jeweiligen Wert abgeleitet werden. Daher ergeben sich folgende Gleichung für die Gradienten:
+
 \begin{align*}
-\delta b_o &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) \\
-\delta W_o &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) *  \vec h^T \\ \\
-\delta b_h &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) * W_o^T * sig'(\vec b_h + W_h * \vec x) \\
-\delta W_h &= mse'(\vec y, \vec z) * sig'(\vec b_o + W_o * \vec x_h) * W_o^T * sig'(\vec b_h + W_h * \vec x) * \vec x^T
+\Delta b_o = \frac{\delta E}{\delta b_o} &= E'(\vec y, \vec \hat y) * sig'(\vec b_o + W_o * \vec x_h) \\
+\Delta W_o = \frac{\delta E}{\delta W_o} &= E'(\vec y, \vec \hat y) * sig'(\vec b_o + W_o * \vec x_h) * \vec x_h^T \\ \\
+\Delta b_h = \frac{\delta E}{\delta b_h} &= E'(\vec y, \vec \hat y) * sig'(\vec b_o + W_o * \vec x_h) * W_o^T * sig'(\vec b_h + W_h * \vec x) \\
+\Delta W_h = \frac{\delta E}{\delta W_h} &= E'(\vec y, \vec \hat y) * sig'(\vec b_o + W_o * \vec x_h) * W_o^T * sig'(\vec b_h + W_h * \vec x) * \vec x^T
 \end{align*}
+
+Die Netzausgabe ist eine stark in sich verschachtelte Funktion. Daher muss hier exzessiv von der Kettenregel Gebrauch gemacht werden. Bei $\vec x_h$ handelt es sich um den Ausgabevektor der versteckten Schicht, welcher ja gleichzeitig der Eingabevektor für die Output-Schicht ist.
+
+Mit den Gradienten können nun die Gewichte und Biaswerte im gesamten Netz angepasst werden. Da man hier praktisch zuerst eine Berechnung über das Netz durchführt und dann nachträglich die Parameter korrigiert, wird dieses Verfahren auch als **Backpropagation** bezeichnet. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren]
+
+### Lernrate
+
+Das Gradientenabstiegsverfahren ist kein präzises Vorgehen, sondern eher als iterativer Prozess gedacht. Anstatt einen vollen Schritt in Richtung des Gradienten zu gehen, wird dieser mit einer Lernrate zwischen 0 und 1 multipliziert. Dadurch ist die Korrektur wesentlich feiner und die Chancen stehen besser, tatsächlich genau das Minimum zu treffen. Andernfalls könnte die Funktion mit jeder Berechnung um das Minimum "herumspringen", da die Korrektur zu groß ist. Gleichzeitig muss hierdurch die Backpropagation oftmals hintereinander durchgeführt werden, wenn man noch sehr weit vom Minimum entfernt ist. [vgl. @patterson2017, Kap. 2 Foundations of Neural Networks and Deep Learning, Abs. Learning Rate]
+
+...
+
+[vgl. @patterson2017, Kap. 6 Tuning Deep Networks, Abs. Understanding Learning Rates]
+
+- Verschiedene Ansätze, Lernrate am Anfang groß und dann kleiner im weiteren Verlauf...
+- guter Startwert $0.1$, aber auch $0.01$ oder $0.001$
 
 ### Batch-Learning
 
-- Da ganzes Set von Trainingsdaten vorhanden => ganzes Set zum Lernen verwenden
-- Berechnung Gradienten zu jedem Trainingsdatensatz
-- Durchschnitt von allen Gradienten bilden und abziehen
+Eine letzte Optimierung wird beim Training zum Einsatz kommen: das **Batch-Learning**.
+
+Die Beispieldaten umfassen mehrere verschiedene Grafiken mit unterschiedlichen Ziffern. Da das Netz alle diese Ziffern erkennen soll, müsste nacheinander stets eine andere Ziffer für das Training verwendet werden. Sobald man mit dem Set durch ist, beginnt man wieder von vorne. Dabei kann es passieren, dass zwei Ziffern genau gegensätzliche Gradienten erzeugen und sich die Korrekturen im Kreis drehen. Dadurch dauert das Training sehr lange.
+
+Das Batch-Learning verbessert diesen Prozess. Dabei werden mit dem gleichen Netz die Gradienten für mehrere Datensätze gleichzeitig berechnet. Aus den verschiedenen Gradienten wird nun der Durchschnitt gebildet. Dieser wird anschließend mit der Lernrate multipliziert und von den Gewichten abgezogen. Dadurch wird mit einem Trainingsschritt ein ganzes Set an Daten angelernt. [vgl. @patterson2017, Kap. 2 Foundations of Neural Networks and Deep Learning, Abs. Backpropagation and Mini-Batch Stochastic Gradienten Descent]
