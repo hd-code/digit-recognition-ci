@@ -1,11 +1,9 @@
 """Defines a data structure and methods for a single layers of a neural network.
 On this level both output and hidden layer work exactly the same."""
 
-# ------------------------------------------------------------------------------
+import numpy as np
 
 import net.activation as a
-
-import numpy as np
 
 # ------------------------------------------------------------------------------
 

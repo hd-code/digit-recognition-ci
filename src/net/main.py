@@ -4,12 +4,10 @@ on that network."""
 # NOTE: This file is called `main.py` because otherwise it would collide with
 #       the module name `net`
 
-# ------------------------------------------------------------------------------
+import numpy as np
 
 import net.error as e
 import net.layer as layer
-
-import numpy as np
 
 # ------------------------------------------------------------------------------
 

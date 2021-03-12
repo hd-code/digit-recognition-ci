@@ -1,9 +1,10 @@
+import json
+import os
+
+import numpy as np
+
 from net.main import Net, init, calc
 from net.layer import Layer
-
-import json
-import numpy as np
-import os
 
 # ------------------------------------------------------------------------------
 

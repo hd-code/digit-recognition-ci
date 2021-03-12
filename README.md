@@ -2,6 +2,8 @@
 
 This repo contains the project files for the course 'Computational Intelligence' at the University of Applied Science Erfurt. The goal is to programm a neural network that recognizes arabic numbers from 0 to 9 in small pixel graphics (5x7).
 
+TODO: Add info about Jupyter
+
 ## Installation
 
 - have **Python** *version 3.9 or later* installed

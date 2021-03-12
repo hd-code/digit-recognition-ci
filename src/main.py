@@ -2,103 +2,166 @@
 
 # ------------------------------------------------------------------------------
 
+import numpy as np
+import pandas as pd
+
 import digits as dg
 import net as nn
 
-import numpy as np
+# ------------------------------------------------------------------------------
+
+DATA = {
+    'all': dg.extractInputAndOutput(dg.getDigits()),
+    'training': dg.extractInputAndOutput(dg.getDigits(kinds={'normal', 'klein', 'digital', 'digital-klein'})),
+    'test': dg.extractInputAndOutput(dg.getDigits(kinds={'evag'})),
+}
 
 # ------------------------------------------------------------------------------
 
+numOfHiddens = {5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90}
+numOfNets = 100
 
-trainingSet = dg.getDigits(
-    kinds={'normal', 'klein', 'digital', 'digital-klein'}
-)
-testSet = dg.getDigits(kinds={'evag'})
+input = DATA['all']['input']
+output = DATA['all']['output']
 
-(trainingSetInput, trainingSetTarget) = dg.extractInputAndOutput(trainingSet)
-(testSetInput, testSetTarget) = dg.extractInputAndOutput(testSet)
+initNets = {
+    'net': [],
+    'numOfHidden': [],
+    'error': []
+}
 
+for numOfHidden in numOfHiddens:
+    np.random.seed(0)  # to create reproduceable results
+
+    for _ in range(numOfNets):
+        net = nn.init(35, numOfHidden, 10)
+        error = nn.calcBatchError(net, input, output)
+
+        initNets['net'].append(net)
+        initNets['numOfHidden'].append(numOfHidden)
+        initNets['error'].append(error)
+
+INIT_NETS = pd.DataFrame(initNets)
 
 # ------------------------------------------------------------------------------
 
+display(INIT_NETS.groupby('numOfHidden').min('error').sort_values('error'))
+INIT_NETS.plot.scatter('numOfHidden', 'error', ylim=(0, 0.7))
 
-NUM_OF_HIDDENS = (5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100)
-NUM_OF_INITIAL_NETS = 100
-NUM_OF_TRAINS = 10
+# ------------------------------------------------------------------------------
 
-LEARN_RATE = 0.1
+numOfHiddens = {35, 70, 20, 25, 15, 30, 5}
+epoches = 1000
+learnRate = 0.1
 
+inputTrain = DATA['training']['input']
+outputTrain = DATA['training']['output']
 
-def getBestGeneratedNet(numOfHidden: int, numOfNets: int) -> nn.Net:
-    np.random.seed(0)
+inputTest = DATA['test']['input']
+outputTest = DATA['test']['output']
 
-    net = nn.init(7*5, numOfHidden, 10)
-    err = nn.calcBatchError(net, trainingSetInput, trainingSetTarget)
-    for i in range(numOfNets - 1):
-        altNet = nn.init(7*5, numOfHidden, 10)
-        altErr = nn.calcBatchError(altNet, trainingSetInput, trainingSetTarget)
-        if altErr < err:
-            net = altNet
-            err = altErr
-    return net
+trainHistory = {
+    'net': [],
+    'numOfHidden': [],
+    'errorTrain': [],
+    'errorTest': [],
+}
 
+for numOfHidden in numOfHiddens:
+    net = INIT_NETS[INIT_NETS.numOfHidden == numOfHidden].nsmallest(
+        1, 'error').iloc[0].net
 
-initialNets = []
-for numOfHidden in NUM_OF_HIDDENS:
-    net = getBestGeneratedNet(numOfHidden, NUM_OF_INITIAL_NETS)
-    initialNets.append([net])
+    for i in range(epoches):
+        net = nn.trainBatch(net, inputTrain, outputTrain, learnRate)
+        errorTrain = nn.calcBatchError(net, inputTrain, outputTrain)
+        errorTest = nn.calcBatchError(net, inputTest, outputTest)
 
-for i in range(len(initialNets)):
-    for j in range(NUM_OF_TRAINS):
-        origNet = initialNets[i][j]
-        nextNet = nn.trainBatch(origNet, trainingSetInput,
-                                trainingSetTarget, LEARN_RATE)
-        initialNets[i].append(nextNet)
+        trainHistory['net'].append(net)
+        trainHistory['numOfHidden'].append(numOfHidden)
+        trainHistory['errorTrain'].append(errorTrain)
+        trainHistory['errorTest'].append(errorTest)
 
+TRAIN_HIDDEN = pd.DataFrame(trainHistory)
 
-bestNetIndex = -1
-bestNetError = 9999
-for i in range(len(initialNets)):
-    net = initialNets[i][0]
-    error = nn.calcBatchError(net, trainingSetInput, trainingSetTarget)
-    if error < bestNetError:
-        bestNetError = error
-        bestNetIndex = i
-print('number of hidden neurons:',
-      NUM_OF_HIDDENS[bestNetIndex], 'error:', bestNetError)
+# ------------------------------------------------------------------------------
 
+display(TRAIN_HIDDEN.groupby('numOfHidden').min(
+    'errorTrain').sort_values('errorTrain'))
+for numOfHidden in {35, 30, 15}:
+    TRAIN_HIDDEN[TRAIN_HIDDEN.numOfHidden == numOfHidden].plot.line(
+        y={'errorTrain', 'errorTest'}, ylim=(0, 0.2), title=numOfHidden)
 
-bestNetIndex = -1
-bestNetError = 9999
-for i in range(len(initialNets)):
-    net = initialNets[i][len(initialNets[i]) - 1]
-    error = nn.calcBatchError(net, trainingSetInput, trainingSetTarget)
-    if error < bestNetError:
-        bestNetError = error
-        bestNetIndex = i
-print('number of hidden neurons:',
-      NUM_OF_HIDDENS[bestNetIndex], 'error:', bestNetError)
+# ------------------------------------------------------------------------------
 
-# net = nn.init(35, NUM_OF_HIDDEN, 10)
-# error = nn.calcBatchError(net, trainingSetInput, trainingSetTarget)
+startNet = INIT_NETS[INIT_NETS.numOfHidden == 15].iloc[0].net
+learnRates = {0.1, 0.01, 0.001}
+epoches = 10000
 
-# print('1st net error:', error)
+inputTrain = DATA['training']['input']
+outputTrain = DATA['training']['output']
 
-# for i in range(9999):
-#     altNet = nn.init(35, NUM_OF_HIDDEN, 10)
-#     altError = nn.calcBatchError(altNet, trainingSetInput, trainingSetTarget)
-#     if altError < error:
-#         net = altNet
-#         error = altError
-#         print(i+2, 'is better:', error)
+inputTest = DATA['test']['input']
+outputTest = DATA['test']['output']
 
-# print('best init net error:', error)
+trainHistory = {
+    'net': [],
+    'learnRate': [],
+    'errorTrain': [],
+    'errorTest': [],
+}
 
-# for i in range(99):
-#     net = nn.trainBatch(net, trainingSetInput, trainingSetTarget, 0.1)
+for learnRate in learnRates:
+    net = startNet
 
-# error = nn.calcBatchError(net, trainingSetInput, trainingSetTarget)
-# print('after training error:', error)
+    for i in range(epoches):
+        net = nn.trainBatch(net, inputTrain, outputTrain, learnRate)
+        errorTrain = nn.calcBatchError(net, inputTrain, outputTrain)
+        errorTest = nn.calcBatchError(net, inputTest, outputTest)
 
-# error = nn.calcBatchError(net, testSetInput, testSetTarget)
-# print('test set error:', error)
+        trainHistory['net'].append(net)
+        trainHistory['learnRate'].append(learnRate)
+        trainHistory['errorTrain'].append(errorTrain)
+        trainHistory['errorTest'].append(errorTest)
+
+TRAIN_LR = pd.DataFrame(trainHistory)
+
+# ------------------------------------------------------------------------------
+
+display(TRAIN_LR.groupby('learnRate').min(
+    'errorTrain').sort_values('errorTrain'))
+TRAIN_LR.groupby('learnRate').plot.line(
+    y={'errorTrain', 'errorTest'}, ylim=(0, 0.4))
+
+# ------------------------------------------------------------------------------
+
+learnRate = 0.1
+targetError = 0.05
+
+inputTrain = DATA['training']['input']
+outputTrain = DATA['training']['output']
+
+inputTest = DATA['test']['input']
+outputTest = DATA['test']['output']
+
+trainHistory = TRAIN_LR[TRAIN_LR.learnRate == learnRate].drop('learnRate', 1)
+net = trainHistory.iloc[-1].net
+error = nn.calcBatchError(net, inputTrain, outputTrain)
+
+while error > targetError:
+    net = nn.trainBatch(net, inputTrain, outputTrain, learnRate)
+    errorTrain = nn.calcBatchError(net, inputTrain, outputTrain)
+    errorTest = nn.calcBatchError(net, inputTest, outputTest)
+
+    trainHistory = trainHistory.append({
+        'net': net,
+        'errorTrain': errorTrain,
+        'errorTest': errorTest,
+    }, ignore_index=True)
+
+    error = errorTrain
+
+TRAIN_FINAL = trainHistory
+
+# ------------------------------------------------------------------------------
+
+TRAIN_FINAL.describe()

@@ -1,11 +1,10 @@
 """This script loads the digits from the data/digits/ directory. It offers
 methods to filter these digits and transform them to different formats."""
 
-# ------------------------------------------------------------------------------
+import os
 
 import pandas as pd
 import numpy as np
-import os
 
 # ------------------------------------------------------------------------------
 
@@ -75,13 +74,16 @@ def getDigits(digits=ALL_DIGITS, kinds=ALL_KINDS) -> list[Digit]:
     ))
 
 
-def extractInputAndOutput(digitSet: list[Digit]) -> tuple[list[float], list[float]]:
+def extractInputAndOutput(digitSet: list[Digit]) -> dict[str, list[float]]:
     """Returns a tuple where the first element is a list of all input vectors
     for the given digit set and the second element is a list of the
     corresponding target vectors."""
     inputs = list(map(lambda digit: digit.getInputVector(), digitSet))
     targets = list(map(lambda digit: digit.getTargetVector(), digitSet))
-    return (inputs, targets)
+    return {
+        'input': inputs,
+        'output': targets,
+    }
 
 
 # ------------------------------------------------------------------------------

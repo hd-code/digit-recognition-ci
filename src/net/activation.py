@@ -1,9 +1,8 @@
 """Implements the activation function for the neural network."""
 
-# ------------------------------------------------------------------------------
-
 from math import exp
 from typing import Callable
+
 import numpy as np
 
 # ------------------------------------------------------------------------------
