@@ -2,7 +2,7 @@
 lang: de
 documentclass: scrreprt
 classoption:
-- 10pt                # Schriftgröße 10pt
+- 9pt                # Schriftgröße 10pt
 - a4paper             # Papierformat A4
 - bibliography=totoc  # das Literaturverzeichnis in den TOC
 - chapterprefix=false # kein Einfügen von "Anhang" bzw. "Kapitel" vor Überschrift

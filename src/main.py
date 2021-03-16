@@ -1,6 +1,12 @@
-"""This is the main script, that trains a neural network for digit recognition."""
+# To add a new cell, type '# %%'
+# To add a new markdown cell, type '# %% [markdown]'
+# %% [markdown]
+#  # Training a Neural Network to Recognize Digits
+#
+#  ## Import Dependencies
 
-# ------------------------------------------------------------------------------
+# %%
+import os
 
 import numpy as np
 import pandas as pd
@@ -8,21 +14,35 @@ import pandas as pd
 import digits as dg
 import net as nn
 
-# ------------------------------------------------------------------------------
+# %% [markdown]
+#  ## Loading Digits from Files
 
-DATA = {
-    'all': dg.extractInputAndOutput(dg.getDigits()),
-    'training': dg.extractInputAndOutput(dg.getDigits(kinds={'normal', 'klein', 'digital', 'digital-klein'})),
-    'test': dg.extractInputAndOutput(dg.getDigits(kinds={'evag'})),
+# %%
+DATA_PATH = os.path.join('..', 'data', 'cache')
+
+allDigits = dg.getDigits()
+trainDigits = dg.getDigits(
+    kinds={'normal', 'normal-klein', 'digital', 'digital-klein'})
+testDigits = dg.getDigits(kinds={'evag'})
+
+DIGITS = {
+    'all': dg.extractInputAndOutput(allDigits),
+    'training': dg.extractInputAndOutput(trainDigits),
+    'test': dg.extractInputAndOutput(testDigits),
 }
 
-# ------------------------------------------------------------------------------
+# %% [markdown]
+#  ## Initialize Networks with Different Number of Hidden Neurons
+
+# %%
+# This calculation might take a while.
+# See below, how to load the results from cache instead
 
 numOfHiddens = {5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90}
 numOfNets = 100
 
-input = DATA['all']['input']
-output = DATA['all']['output']
+input = DIGITS['all']['input']
+output = DIGITS['all']['output']
 
 initNets = {
     'net': [],
@@ -43,22 +63,40 @@ for numOfHidden in numOfHiddens:
 
 INIT_NETS = pd.DataFrame(initNets)
 
-# ------------------------------------------------------------------------------
 
-display(INIT_NETS.groupby('numOfHidden').min('error').sort_values('error'))
+# %%
+# store initial networks to cache
+INIT_NETS.to_pickle(os.path.join(DATA_PATH, 'init-nets.pkl'))
+
+
+# %%
+# load initial networks from cache
+INIT_NETS = pd.read_pickle(os.path.join(DATA_PATH, 'init-nets.pkl'))
+
+
+# %%
 INIT_NETS.plot.scatter('numOfHidden', 'error', ylim=(0, 0.7))
 
-# ------------------------------------------------------------------------------
 
-numOfHiddens = {35, 70, 20, 25, 15, 30, 5}
+# %%
+INIT_NETS.groupby('numOfHidden').min('error').sort_values('error')
+
+# %% [markdown]
+#  ## Training Promising Networks
+
+# %%
+# This calculation might take a while.
+# See below, how to load the results from cache instead
+
+numOfHiddens = {35, 70, 20, 25, 15, 30}
 epoches = 1000
 learnRate = 0.1
 
-inputTrain = DATA['training']['input']
-outputTrain = DATA['training']['output']
+inputTrain = DIGITS['training']['input']
+outputTrain = DIGITS['training']['output']
 
-inputTest = DATA['test']['input']
-outputTest = DATA['test']['output']
+inputTest = DIGITS['test']['input']
+outputTest = DIGITS['test']['output']
 
 trainHistory = {
     'net': [],
@@ -68,8 +106,8 @@ trainHistory = {
 }
 
 for numOfHidden in numOfHiddens:
-    net = INIT_NETS[INIT_NETS.numOfHidden == numOfHidden].nsmallest(
-        1, 'error').iloc[0].net
+    net = INIT_NETS[INIT_NETS.numOfHidden == numOfHidden].sort_values(
+        'error').iloc[0].net
 
     for i in range(epoches):
         net = nn.trainBatch(net, inputTrain, outputTrain, learnRate)
@@ -83,25 +121,56 @@ for numOfHidden in numOfHiddens:
 
 TRAIN_HIDDEN = pd.DataFrame(trainHistory)
 
-# ------------------------------------------------------------------------------
 
-display(TRAIN_HIDDEN.groupby('numOfHidden').min(
-    'errorTrain').sort_values('errorTrain'))
-for numOfHidden in {35, 30, 15}:
+# %%
+# store trained promising networks to cache
+TRAIN_HIDDEN.to_pickle(os.path.join(DATA_PATH, 'train-hidden.pkl'))
+
+
+# %%
+# load trained promising networks from cache
+TRAIN_HIDDEN = pd.read_pickle(os.path.join(DATA_PATH, 'train-hidden.pkl'))
+
+
+# %%
+end = TRAIN_HIDDEN.groupby('numOfHidden').min(
+    'errorTrain').sort_values('numOfHidden')
+start = INIT_NETS.groupby('numOfHidden').min(
+    'error').sort_values('numOfHidden')
+
+diff = end.join(start)
+diff.rename(columns={'error': 'errorStart'}, inplace=True)
+diff['diff'] = diff.errorStart - diff.errorTrain
+
+diff.sort_values('diff', ascending=False)
+
+
+# %%
+for numOfHidden in {15, 20, 25, 30}:
     TRAIN_HIDDEN[TRAIN_HIDDEN.numOfHidden == numOfHidden].plot.line(
-        y={'errorTrain', 'errorTest'}, ylim=(0, 0.2), title=numOfHidden)
+        title=f'Hidden Neurons: {numOfHidden}',
+        y={'errorTrain', 'errorTest'}, ylim=(0, 0.2),
+        use_index=False,
+    )
 
-# ------------------------------------------------------------------------------
+# %% [markdown]
+#  ## Finding the Optimal Learning Rate
 
-startNet = INIT_NETS[INIT_NETS.numOfHidden == 15].iloc[0].net
-learnRates = {0.1, 0.01, 0.001}
+# %%
+# This calculation might take a while.
+# See below, how to load the results from cache instead
+numOfHidden = 15
+learnRates = {1, 0.1, 0.01, 0.001}
 epoches = 10000
 
-inputTrain = DATA['training']['input']
-outputTrain = DATA['training']['output']
+startNet = INIT_NETS[INIT_NETS.numOfHidden == numOfHidden].sort_values(
+    'error').iloc[0].net
 
-inputTest = DATA['test']['input']
-outputTest = DATA['test']['output']
+inputTrain = DIGITS['training']['input']
+outputTrain = DIGITS['training']['output']
+
+inputTest = DIGITS['test']['input']
+outputTest = DIGITS['test']['output']
 
 trainHistory = {
     'net': [],
@@ -125,23 +194,44 @@ for learnRate in learnRates:
 
 TRAIN_LR = pd.DataFrame(trainHistory)
 
-# ------------------------------------------------------------------------------
 
-display(TRAIN_LR.groupby('learnRate').min(
-    'errorTrain').sort_values('errorTrain'))
-TRAIN_LR.groupby('learnRate').plot.line(
-    y={'errorTrain', 'errorTest'}, ylim=(0, 0.4))
+# %%
+# store training with different learning rates to cache
+TRAIN_LR.to_pickle(os.path.join(DATA_PATH, 'train-learn-rate.pkl'))
 
-# ------------------------------------------------------------------------------
 
-learnRate = 0.1
-targetError = 0.05
+# %%
+# load training with different learning rates from cache
+TRAIN_LR = pd.read_pickle(os.path.join(DATA_PATH, 'train-learn-rate.pkl'))
 
-inputTrain = DATA['training']['input']
-outputTrain = DATA['training']['output']
 
-inputTest = DATA['test']['input']
-outputTest = DATA['test']['output']
+# %%
+for learnRate, df in TRAIN_LR.groupby('learnRate'):
+    df.plot.line(
+        title=f'Learning Rate: {learnRate}',
+        y={'errorTrain', 'errorTest'}, ylim=(0, 0.2),
+        use_index=False,
+    )
+
+
+# %%
+TRAIN_LR.groupby('learnRate').min('errorTrain').sort_values('errorTrain')
+
+# %% [markdown]
+#  ## Final Training of the Network
+
+# %%
+# This calculation might take a while.
+# See below, how to load the results from cache instead
+
+learnRate = 1
+targetError = 0.001
+
+inputTrain = DIGITS['training']['input']
+outputTrain = DIGITS['training']['output']
+
+inputTest = DIGITS['test']['input']
+outputTest = DIGITS['test']['output']
 
 trainHistory = TRAIN_LR[TRAIN_LR.learnRate == learnRate].drop('learnRate', 1)
 net = trainHistory.iloc[-1].net
@@ -162,6 +252,114 @@ while error > targetError:
 
 TRAIN_FINAL = trainHistory
 
-# ------------------------------------------------------------------------------
 
+# %%
+# store final training round to cache
+TRAIN_FINAL.to_pickle(os.path.join(DATA_PATH, 'train-final.pkl'))
+
+
+# %%
+# load final training round from cache
+TRAIN_FINAL = pd.read_pickle(os.path.join(DATA_PATH, 'train-final.pkl'))
+
+
+# %%
+TRAIN_FINAL.plot.line(ylim=(0, 0.2))
+
+
+# %%
 TRAIN_FINAL.describe()
+
+# %% [markdown]
+#  ## Analyzing the Final Neural Network
+
+# %%
+FINAL_NET = TRAIN_FINAL.iloc[-1].net
+
+
+# %%
+# store final network to cache
+nn.save(FINAL_NET, os.path.join(DATA_PATH, 'final-net.pkl'))
+
+
+# %%
+# load final network from cache
+FINAL_NET = nn.load(os.path.join(DATA_PATH, 'final-net.pkl'))
+
+
+# %%
+net = FINAL_NET
+result = {
+    'kind': [],
+    'error': [],
+}
+
+for kind in dg.ALL_KINDS:
+    digits = dg.getDigits(kinds={kind})
+    inOutputs = dg.extractInputAndOutput(digits)
+    error = nn.calcBatchError(net, inOutputs['input'], inOutputs['output'])
+
+    result['kind'].append(kind)
+    result['error'].append(error)
+
+pd.DataFrame(result).plot.bar(x='kind', title='Average Error per Set')
+
+
+# %%
+net = FINAL_NET
+result = {
+    'digit': [],
+    'error': [],
+}
+
+for digit in dg.ALL_DIGITS:
+    digits = dg.getDigits(digits={digit})
+    inOutputs = dg.extractInputAndOutput(digits)
+    error = nn.calcBatchError(net, inOutputs['input'], inOutputs['output'])
+
+    result['digit'].append(digit)
+    result['error'].append(error)
+
+pd.DataFrame(result).plot.bar(x='digit', title='Average Error per Digit')
+
+
+# %%
+net = FINAL_NET
+result = {
+    'digit': [],
+    'error': [],
+}
+
+for digit in dg.ALL_DIGITS:
+    digits = dg.getDigits(digits={digit}, kinds={'evag'})
+    inOutputs = dg.extractInputAndOutput(digits)
+    error = nn.calcBatchError(net, inOutputs['input'], inOutputs['output'])
+
+    result['digit'].append(digit)
+    result['error'].append(error)
+
+pd.DataFrame(result).plot.bar(
+    x='digit', title='Average Error on evag Set per Digit')
+
+
+# %%
+net = FINAL_NET
+result = {
+    'digit': [],
+    'error': [],
+}
+
+for digit in dg.ALL_DIGITS:
+    digits = dg.getDigits(digits={digit}, kinds={
+                          'normal', 'normal-klein', 'digital', 'digital-klein'})
+    inOutputs = dg.extractInputAndOutput(digits)
+    error = nn.calcBatchError(net, inOutputs['input'], inOutputs['output'])
+
+    result['digit'].append(digit)
+    result['error'].append(error)
+
+pd.DataFrame(result).plot.bar(
+    x='digit', title='Average Error on Training Set per Digit')
+
+
+# %%

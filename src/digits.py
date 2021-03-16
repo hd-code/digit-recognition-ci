@@ -30,7 +30,7 @@ class Digit:
 
 
 ALL_DIGITS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-ALL_KINDS = {'normal', 'klein', 'digital', 'digital-klein', 'evag'}
+ALL_KINDS = {'normal', 'normal-klein', 'digital', 'digital-klein', 'evag'}
 
 
 # ------------------------------------------------------------------------------
@@ -75,14 +75,13 @@ def getDigits(digits=ALL_DIGITS, kinds=ALL_KINDS) -> list[Digit]:
 
 
 def extractInputAndOutput(digitSet: list[Digit]) -> dict[str, list[float]]:
-    """Returns a tuple where the first element is a list of all input vectors
-    for the given digit set and the second element is a list of the
-    corresponding target vectors."""
+    """Returns a dict where 'input' is a list of all input vectors for the given
+    digit set and 'output' is a list of the corresponding output vectors."""
     inputs = list(map(lambda digit: digit.getInputVector(), digitSet))
-    targets = list(map(lambda digit: digit.getTargetVector(), digitSet))
+    outputs = list(map(lambda digit: digit.getTargetVector(), digitSet))
     return {
         'input': inputs,
-        'output': targets,
+        'output': outputs,
     }
 
 

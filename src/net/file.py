@@ -2,6 +2,7 @@ import json
 import os
 
 import numpy as np
+import pandas as pd
 
 from net.main import Net, init, calc
 from net.layer import Layer
@@ -9,50 +10,43 @@ from net.layer import Layer
 # ------------------------------------------------------------------------------
 
 
-def saveNet(net: Net, filepath: str):
-    np.save(filepath + '_' + 'hiddenBias', net.hiddenLayer.bias)
-    np.save(filepath + '_' + 'hiddenWeights', net.hiddenLayer.weights)
-    np.save(filepath + '_' + 'outputBias', net.outputLayer.bias)
-    np.save(filepath + '_' + 'outputWeights', net.outputLayer.weights)
+def save(net: Net, filepath: str):
+    obj = {'net': [net]}
+    df = pd.DataFrame(obj)
+    df.to_pickle(filepath)
 
 
-def loadNet(filepath: str) -> Net:
-    return Net(
-        Layer(
-            np.load(filepath + '_' + 'hiddenBias' + '.npy'),
-            np.load(filepath + '_' + 'hiddenWeights' + '.npy'),
-        ),
-        Layer(
-            np.load(filepath + '_' + 'outputBias' + '.npy'),
-            np.load(filepath + '_' + 'outputWeights' + '.npy'),
-        ),
-    )
+def load(filepath: str) -> Net:
+    df = pd.read_pickle(filepath)
+    return df.iloc[0].net
 
 
 # ------------------------------------------------------------------------------
 # Testing
 
 if __name__ == '__main__':
-    filepath = 'tmp'
+    filepathBase = 'tmp'
+    filepath = '_' + filepathBase
     while os.path.exists(filepath):
-        filepath = filepath + filepath
+        filepath = filepath + filepathBase
 
-    print('\nfile.py')
-    print('  store and load net again')
-    tmpNet = init(2, 3, 1)
-    saveNet(tmpNet, filepath)
-    net = loadNet(filepath)
+    try:
+        print('\nfile.py')
+        print('  store and load net again')
+        tmpNet = init(2, 3, 1)
+        save(tmpNet, filepath)
+        net = load(filepath)
 
-    print('  both nets should be equal')
-    assert tmpNet == net
+        print('  both nets should be equal')
+        assert tmpNet == net
 
-    print('  do calculation on the loaded net')
-    calc(net, np.array([0, 0]))
+        print('  do calculation on the loaded net')
+        calc(net, np.array([0, 0]))
 
-    print('  remove the dumpfiles')
-    os.remove(filepath + '_' + 'hiddenBias' + '.npy')
-    os.remove(filepath + '_' + 'hiddenWeights' + '.npy')
-    os.remove(filepath + '_' + 'outputBias' + '.npy')
-    os.remove(filepath + '_' + 'outputWeights' + '.npy')
+        print('  remove the dumpfile')
+        os.remove(filepath)
 
-    print('SUCCESS\n')
+        print('SUCCESS\n')
+
+    except:
+        os.remove(filepath)

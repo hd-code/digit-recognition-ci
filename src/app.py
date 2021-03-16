@@ -1,36 +1,44 @@
 """This script starts an iteractive window, where a custom digit can be given.
 The digit is then analyzed by the neural network."""
 
-# TODO: add correct implementation
-# TODO: neural net has to be exported by `main.py` first !
+import os
 
-# ------------------------------------------------------------------------------
-
+import numpy as np
 import PySimpleGUI as sg
 
-
-# Style ------------------------------------------------------------------------
-
-buttonColors = {
-    0: ('black', 'white'),
-    1: ('white', 'black'),
-}
-
-fontHeader = ('Helvetica', 30)
-fontNormal = ('Helvetica', 20)
+import net as nn
 
 
 # Pixels -----------------------------------------------------------------------
 
+PIXELS = [
+    [0, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [0, 1, 1, 1, 0],
+]
+
+
+def updatePixel(i: int, j: int) -> int:
+    newValue = 1 if PIXELS[i][j] == 0 else 0
+    PIXELS[i][j] = newValue
+    return newValue
+
+
 def makeButtonKey(i: int, j: int) -> str:
-    return f'pixel-{i}-{j}'
+    return f'-PIXEL-{i}-{j}'
 
 
 def extractButtonKey(key: str) -> tuple[bool, int, int]:
     try:
-        key[:5] == 'pixel'
-        i = int(key[6])
-        j = int(key[8])
+        trimmed = key.strip('-')
+        parts = trimmed.split('-')
+        assert parts[0] == 'PIXEL'
+        i = int(parts[1])
+        j = int(parts[2])
         return (True, i, j)
     except:
         return (False, 0, 0)
@@ -49,56 +57,77 @@ def createPixelButtons():
             row,
             range(len(row)),
         )),
-        pixels,
-        range(len(pixels)),
+        PIXELS,
+        range(len(PIXELS)),
     ))
-
-
-def updatePixel(i: int, j: int) -> int:
-    newValue = 1 if pixels[i][j] == 0 else 0
-    pixels[i][j] = newValue
-    return newValue
-
-
-pixels = [
-    [0, 1, 1, 1, 0],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [0, 1, 1, 1, 0],
-]
 
 
 # Network ----------------------------------------------------------------------
 
-net = []
+srcPath = os.path.dirname(os.path.realpath(__file__))
 
-netOutput = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recognizedDigit = 0
+NET = nn.load(os.path.join(srcPath, '..', 'data', 'cache', 'final-net.pkl'))
+
+KEY_DIGIT = '-DIGIT-'
 
 
-# Digits -----------------------------------------------------------------------
+def calcNetOutput():
+    return nn.calc(NET, np.array(PIXELS).flatten())
+
+
+def getIndexOfHighest(values: list[float]):
+    if len(values) <= 0:
+        return -1
+
+    result = 0
+    highest = values[0]
+    for i in range(len(values)):
+        value = values[i]
+        if highest < value:
+            highest = value
+            result = i
+
+    return result
+
+
+def getNetUpdates():
+    netOutput = calcNetOutput()
+
+    result = {}
+    for i in range(len(netOutput)):
+        value = netOutput[i]
+        result[f'-OUTPUT-{i}-'] = f'{int(value * 100)}'.rjust(3, '_')
+
+    digit = getIndexOfHighest(netOutput)
+    result[KEY_DIGIT] = digit
+
+    return result
+
 
 def createDigitOutputs():
-    layout = []
-    for i in range(10):
-        layout.append([
+    updateValues = getNetUpdates()
+    del updateValues[KEY_DIGIT]
+
+    result = []
+    for key, value in updateValues.items():
+        i = len(result)
+        result.append([
             sg.Text(f'{i}:'),
-            sg.Text(f'{netOutput[i]}', key=f'digit-{i}'),
+            sg.Text(value, key=key),
+            sg.Text('%'),
         ])
-    return layout
+
+    return result
 
 
-def updateDigitOutputs(window: sg.Window):
-    for i in range(len(netOutput)):
-        window[f'digit-{i}'].update(netOutput[i])
+# Create Window ----------------------------------------------------------------
 
-
-# Layout -----------------------------------------------------------------------
-
-keyDigit = '-DIGIT-'
+buttonColors = {
+    0: ('black', 'white'),
+    1: ('white', 'black'),
+}
+fontHeader = ('Helvetica', 30)
+fontNormal = ('Helvetica', 20)
 
 layout = [[
     sg.Column(
@@ -120,18 +149,23 @@ layout = [[
         pad=(40, 0),
     ),
 ], [
-    sg.Text('Es ist eine:'),
-    sg.Text(str(recognizedDigit), key=keyDigit),
+    sg.Text('Es ist eine:', font=fontHeader),
+    sg.Text(str(0), key=KEY_DIGIT, font=fontHeader),
 ]]
 
 print('Starting app...')
+
 window = sg.Window(
     'Ziffern erkennen', layout,
     element_justification='center',
     element_padding=(0, 0),
     font=fontNormal,
+    finalize=True,
 )
 
+updateValues = getNetUpdates()
+for key, value in updateValues.items():
+    window[key].update(value)
 
 # Event Loop -------------------------------------------------------------------
 
@@ -148,8 +182,8 @@ while True:
             button_color=buttonColors[newValue],
         )
 
-    updateDigitOutputs(window)
-
-    # TODO: load and run calculation from neural network
+        updateValues = getNetUpdates()
+        for key, value in updateValues.items():
+            window[key].update(value)
 
 window.close()

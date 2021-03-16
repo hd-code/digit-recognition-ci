@@ -5,5 +5,4 @@ docker build -t pandoc .
 docker run --rm -it -v "${PWD}":/data pandoc
 
 # build pdf file directly (run in docker container)
-pandoc -o thesis.pdf --bibliography quellen.bib -H preamble.tex -B titlepage.tex *.md
-pandoc -o projektabgabe.pdf --bibliography quellen.bib -H preamble.tex -B titlepage.tex *.md
+pandoc -o Dokumentation.pdf --bibliography quellen.bib -H preamble.tex -B titlepage.tex *.md
