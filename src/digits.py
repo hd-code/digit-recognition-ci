@@ -1,10 +1,18 @@
 """This script loads the digits from the data/digits/ directory. It offers
 methods to filter these digits and transform them to different formats."""
 
+import json
 import os
 
 import pandas as pd
 import numpy as np
+
+# ------------------------------------------------------------------------------
+
+
+ALL_DIGITS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+ALL_KINDS = {'normal', 'normal-klein', 'digital', 'digital-klein', 'evag'}
+
 
 # ------------------------------------------------------------------------------
 
@@ -23,30 +31,29 @@ class Digit:
     def getInputVector(self) -> np.ndarray:
         return self.img.flatten()
 
-    def getTargetVector(self) -> np.ndarray:
-        result = np.zeros(10)
+    def getOutputVector(self) -> np.ndarray:
+        result = np.zeros(len(ALL_DIGITS))
         result[self.digit] = 1
         return result
-
-
-ALL_DIGITS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-ALL_KINDS = {'normal', 'normal-klein', 'digital', 'digital-klein', 'evag'}
 
 
 # ------------------------------------------------------------------------------
 
 
+digitsDir = os.path.join(os.path.dirname(__file__), '..', 'data', 'digits')
+
+
 def _loadDigitFromFile(digit: int, kind: str) -> Digit:
-    filePath = os.path.join(
-        os.path.dirname(__file__), '..', 'data', 'digits',
-        str(digit) + '-' + kind + '.csv'
-    )
+    """Loads a single digit from a file on disk."""
+    fileName = f'{str(digit)}-{kind}.csv'
+    filePath = os.path.join(digitsDir, fileName)
     csvFile = pd.read_csv(filePath, header=None, sep=";")
     img = np.array(csvFile)
     return Digit(digit, kind, img)
 
 
 def _loadAllDigits() -> list[Digit]:
+    """Loads all digits in the digits directory."""
     digits = []
     for digit in ALL_DIGITS:
         for kind in ALL_KINDS:
@@ -54,7 +61,7 @@ def _loadAllDigits() -> list[Digit]:
     return digits
 
 
-_allDigits = _loadAllDigits()
+_allDigits = _loadAllDigits()  # all digits are cached in this variable
 
 
 # ------------------------------------------------------------------------------
@@ -74,11 +81,11 @@ def getDigits(digits=ALL_DIGITS, kinds=ALL_KINDS) -> list[Digit]:
     ))
 
 
-def extractInputAndOutput(digitSet: list[Digit]) -> dict[str, list[float]]:
+def extractInputAndOutput(digitSet: list[Digit]) -> dict[str, list[np.ndarray]]:
     """Returns a dict where 'input' is a list of all input vectors for the given
     digit set and 'output' is a list of the corresponding output vectors."""
     inputs = list(map(lambda digit: digit.getInputVector(), digitSet))
-    outputs = list(map(lambda digit: digit.getTargetVector(), digitSet))
+    outputs = list(map(lambda digit: digit.getOutputVector(), digitSet))
     return {
         'input': inputs,
         'output': outputs,
@@ -92,10 +99,37 @@ if __name__ == '__main__':
     numOfDigits = len(ALL_DIGITS) * len(ALL_KINDS)
 
     print('\ndigits.py')
+
     print('  check if all digits were loaded')
-    numOfDigitsWant = len(ALL_DIGITS) * len(ALL_KINDS)
-    numOfDigitsGot = len(_allDigits)
-    assert numOfDigitsGot == numOfDigitsWant, 'got %d digits, expected %d' % (
-        numOfDigitsGot, numOfDigitsWant
+    wantNumOfDigits = len(ALL_DIGITS) * len(ALL_KINDS)
+    gotNumOfDigits = len(_allDigits)
+    assert gotNumOfDigits == wantNumOfDigits, 'got %d digits, expected %d' % (
+        gotNumOfDigits, wantNumOfDigits
     )
+
+    print('  check filter for digits')
+    wantNumOfDigits = len(ALL_KINDS)
+
+    gotDigits = getDigits(digits={3})
+    gotNumOfDigits = len(gotDigits)
+
+    assert gotNumOfDigits == wantNumOfDigits, 'got %d digits, expected %d'
+
+    print('  check filter for digit set (kind)')
+    wantNumOfDigits = len(ALL_DIGITS)
+
+    gotDigits = getDigits(kinds={'evag'})
+    gotNumOfDigits = len(gotDigits)
+
+    assert gotNumOfDigits == wantNumOfDigits, 'got %d digits, expected %d'
+
+    print('  check snapshot for extracted input and output')
+    wantNumOfDigits = len(ALL_KINDS)
+
+    gotDigits = getDigits(digits={5})
+    got = extractInputAndOutput(gotDigits)
+
+    assert len(got['input']) == wantNumOfDigits
+    assert len(got['output']) == wantNumOfDigits
+
     print('SUCCESS\n')

@@ -33,10 +33,10 @@ Wie die benötigten Software-Komponenten installiert werden, ist im vorherigen A
 
 - `numpy` – eine Bibliothek für schnelles und effizientes Rechnen mit Vektoren und Matrizen.
 - `pandas` – eine Bibliothek zum einfachen Speichern, Laden und Visualisieren von tabellarischen Daten.
-- `matplotlib` – wird von `pandas` benötigt um Daten in Form von Grafiken visualisieren zu können.
+- `matplotlib` – wird von `pandas` benötigt, um Daten in Form von Grafiken visualisieren zu können.
 - `jupyter` – ist eine Entwicklungsumgebung, in der Codeschnipsel geschrieben, ausgeführt und die Ergebnisse direkt angezeigt werden können.
 - `ipykernel` – wird von `jupyter` benötigt, um Python-Code ausführen zu können.
-- `PySimpleGui` – eine Bibliothek um interaktive Programme mit einer GUI zu erstellen.
+- `PySimpleGui` – eine Bibliothek, um interaktive Programme mit einer GUI zu erstellen.
 
 ## Projektübersicht
 
@@ -45,7 +45,7 @@ Wie die benötigten Software-Komponenten installiert werden, ist im vorherigen A
 Damit das Projekt übersichtlich bleibt, ist es in Ordner und Unterordner gegliedert. Die Ordner sind:
 
 - `data`
-  - `cache` – enthält Ergebnisse einer Simulation
+  - `cache` – enthält die Ergebnisse einer Simulation
   - `digits` – enthält die Ziffern für die Trainings- und Testdaten als CSV-Dateien
 - `docs` – Dokumentation des Projektes (also faktisch dieses Dokument).
 - `src` – Source-Code, weitere Erklärung in den folgenden Abschnitten
@@ -86,11 +86,13 @@ Python erlaubt die Gliederung des Source-Codes in Module (einzelne Dateien) und 
 
 Dieses Module lädt die Ziffern (also die Beispieldaten), welche sich im Ordner `data > digits` als CSV-Dateien befinden. Die Implementierung befindet sich in der Datei `src > digits.py`. Es ist möglich die Ziffern zu filtern (nach der Ziffer selbst oder nach dem Set, zu welchem eine Ziffer gehört).
 
+Die Ziffern sind so gespeichert, dass der Dateiname mit der Ziffer beginnt, welche sich hinter der Datei verbirgt. Es folgt der Name des Ziffern-Sets mit Bindestrichen getrennt (näheres im nächsten Kapitel). So lautet der Dateiname für die Ziffer 5 des evag Datensets z.B. `5-evag.csv`.
+
 #### Net-Package
 
 Dieses Package implementiert das neuronale Netz als wiederverwendbare Bibliothek. Es besteht aus mehreren Dateien, die sich alle im Ordner `src > net` befinden. Alle Teilaspekte eines neuronalen Netzes finden sich hier wieder (Aktivierungs- und Fehlerfunktionen, die Schichten sowie die Möglichkeit ein Netz zu speichern und zu laden).
 
-Die Datei `__init__.py` legt fest, welche Methoden dieses Package nach außen bereitstellt. Es gibt Methoden, um ein Netz mit verschiedenen Neuronen zu initialisieren, Berechnungen durchzuführen, Fehlerwerte zu ermitteln und natürlich ein Netz zu trainieren.
+Die Datei `__init__.py` legt fest, welche Methoden dieses Package nach außen bereitstellt. Es gibt Methoden, um ein Netz mit verschiedenen Neuronen zu initialisieren (`init`), Berechnungen durchzuführen (`calc` und `calcBatch`), Fehlerwerte zu ermitteln (`calcError` und `calcBatchError`) und natürlich ein Netz zu trainieren (`train` und `trainBatch`). Zusätzlich kann ein Netz auf der Festplatte gespeichert (`save`) und wieder geladen werden (`load`).
 
 #### Testing
 

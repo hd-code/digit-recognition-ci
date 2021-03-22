@@ -53,7 +53,7 @@ Für dieses Projekt wird daher ausschließlich die **logistische Funktion** und 
 
 Durch die Zusammenschaltung mehrerer Neuronen entsteht nun ein Netz. Sehr geläufig sind hierbei **vorwärtsgerichtete Netze**. Dabei werden mehrere Neuronen zu einer sog. **Schicht** zusammengefasst. Innerhalb einer Schicht besteht keine Verbindung zwischen den Neuronen. Die Schichten werden in einer festen Reihenfolge nacheinander angeordnet. Jedes Neuron einer Schicht wird mit jedem Neuron der Folgeschicht verbunden. Die folgende Abbildung zeigt eine schematische Darstellung eines solchen Netzes:
 
-![Ein vorwärtsgerichtetes Netz mit mehreren Schichten. Grafik aus [@sutton2018]](img/net-with-layers.png){width=60%}
+![Ein vorwärtsgerichtetes Netz mit mehreren Schichten. [Grafik aus @sutton2018]](img/net-with-layers.png){width=60%}
 
 Die weißen Kreise symbolisieren ein Neuron. Dabei sind die Neuronen auf der ersten (linken) Schicht lediglich Input-Neuronen. Diese bekommen also einfach die Inputwerte des Netzes übergeben. Alle Neuronen auf den Folgeschichten sind "echte" Neuronen wie sie zuvor beschrieben worden sind. Diese Werte werden nun über gewichtete Verbindungen (Kanten) an die Folgeschichten weitergeleitet. Die Biaswerte sind in dieser Grafik leider nicht dargestellt. Die nächsten zwei Schichten sind sog. versteckte Schichten und die letzte ist die Ausgabe-Schicht. Das Netz ist also in der Lage einen Vektor an Eingabewerten zu verarbeiten und auch einen Vektor an Ausgabewerten zurückzugeben. [vgl. @sutton2018, Kap. 9.7 Nonlinear Function Approximation: Artificial Neural Networks]
 
@@ -91,7 +91,7 @@ Nun stellt sich die Frage, wie das neuronale Netz die gesuchte Funktion approxim
 
 Gradientenabstiegsverfahren werden verwendet, um das Minimum einer Funktion zu finden. Man beginnt an einem zufälligen Punkt auf der Funktion. Nun wird der *Anstieg* (auch Gradient genannt) in diesem Punkt berechnet. Da ein Minimum der kleinste mögliche Wert einer Funktion ist, bewegt man sich nun entgegengesetzt des Anstiegs entlang der Funktion. Je stärker der Anstieg, umso größer fällt auch der Schritt in die entgegengesetzte Richtung aus. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren]
 
-![Das Newton-Verfahren als der Ursprung des Gradientenabstiegsverfahren. Grafik aus [@lammel2020]](img/gradientenabstieg.png){width=40%}
+![Das Newton-Verfahren als der Ursprung des Gradientenabstiegsverfahren. [Grafik aus @lammel2020]](img/gradientenabstieg.png){width=40%}
 
 Mit diesem Verfahren geschieht aber nur eine Annäherung an das Minimum. Die Idee ist, dass man dieses Vorgehen mehrmals hintereinander durchführt, bis das Minimum der Funktion gefunden ist. [vgl. @lammel2020, Kap. 6.2.1 Das Backpropagation-Verfahren]
 

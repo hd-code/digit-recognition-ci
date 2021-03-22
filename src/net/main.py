@@ -24,7 +24,7 @@ class Net:
         self.outputLayer = outputLayer
 
     def __repr__(self):
-        return '-- hidden layer: \n%s,\n\n-- output layer: \n%s\n' % (self.hiddenLayer, self.outputLayer)
+        return '-- hidden layer: \n%s,\n\n-- output layer: \n%s' % (self.hiddenLayer, self.outputLayer)
 
     def __eq__(self, other):
         return str(self) == str(other)
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     wantErrSingle = 0.5320000724762278
     wantErrBatch = 0.3736861371567025
 
-    snapshotTrainedNet = '''-- hidden layer: \nbias: [ 0.23129396  0.34364699  0.20485942 -0.0131533 ]\nweights: \n[[-0.23316034  0.33850732]\n [-0.18397432  0.6077061 ]\n [ 0.92454783 -0.13785743]\n [ 0.60993843  0.01353776]],\n\n-- output layer: \nbias: [-0.17051793  0.26982272 -0.073488  ]\nweights: \n[[-0.97584854 -1.10252765  0.52139186  0.42501474]\n [ 0.41146236  0.57705615  0.23285626 -0.40848657]\n [ 1.04694174 -0.17441979  0.67780059 -0.31265852]]\n'''
+    snapshotTrainedNet = '''-- hidden layer: \nbias: [ 0.23129396  0.34364699  0.20485942 -0.0131533 ]\nweights: \n[[-0.23316034  0.33850732]\n [-0.18397432  0.6077061 ]\n [ 0.92454783 -0.13785743]\n [ 0.60993843  0.01353776]],\n\n-- output layer: \nbias: [-0.17051793  0.26982272 -0.073488  ]\nweights: \n[[-0.97584854 -1.10252765  0.52139186  0.42501474]\n [ 0.41146236  0.57705615  0.23285626 -0.40848657]\n [ 1.04694174 -0.17441979  0.67780059 -0.31265852]]'''
 
     print('\nnet.py')
 

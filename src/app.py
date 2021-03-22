@@ -1,4 +1,4 @@
-"""This script starts an iteractive window, where a custom digit can be given.
+"""This script starts an interactive window, where a custom digit can be given.
 The digit is then analyzed by the neural network."""
 
 import os
@@ -10,6 +10,7 @@ import net as nn
 
 
 # Pixels -----------------------------------------------------------------------
+# The input pixel field on the left
 
 PIXELS = [
     [0, 1, 1, 1, 0],
@@ -33,6 +34,8 @@ def makeButtonKey(i: int, j: int) -> str:
 
 
 def extractButtonKey(key: str) -> tuple[bool, int, int]:
+    """Checks if the given key belongs to a pixel and if so, it extracts the
+    position (i and j)."""
     try:
         trimmed = key.strip('-')
         parts = trimmed.split('-')
@@ -63,11 +66,12 @@ def createPixelButtons():
 
 
 # Network ----------------------------------------------------------------------
+# The neural network for the output on the right.
 
 srcPath = os.path.dirname(os.path.realpath(__file__))
+netPath = os.path.join(srcPath, '..', 'data', 'cache', 'final-net.pkl')
 
-NET = nn.load(os.path.join(srcPath, '..', 'data', 'cache', 'final-net.pkl'))
-
+NET = nn.load(netPath)
 KEY_DIGIT = '-DIGIT-'
 
 
@@ -76,6 +80,7 @@ def calcNetOutput():
 
 
 def getIndexOfHighest(values: list[float]):
+    """Returns the index of the highest value in a list."""
     if len(values) <= 0:
         return -1
 
@@ -91,6 +96,7 @@ def getIndexOfHighest(values: list[float]):
 
 
 def getNetUpdates():
+    """Returns a dict with all keys and their updated values."""
     netOutput = calcNetOutput()
 
     result = {}
@@ -121,6 +127,7 @@ def createDigitOutputs():
 
 
 # Create Window ----------------------------------------------------------------
+# Starts the application and initializes the window
 
 buttonColors = {
     0: ('black', 'white'),
@@ -168,6 +175,7 @@ for key, value in updateValues.items():
     window[key].update(value)
 
 # Event Loop -------------------------------------------------------------------
+# Listens for events (e.g. clicks on the pixels) and updates the window.
 
 while True:
     event, values = window.read()
@@ -177,13 +185,13 @@ while True:
     (isPixel, i, j) = extractButtonKey(event)
     if isPixel:
         newValue = updatePixel(i, j)
-        window[event].update(
+        window[event].update(  # update clicked pixel
             text=newValue,
             button_color=buttonColors[newValue],
         )
 
         updateValues = getNetUpdates()
         for key, value in updateValues.items():
-            window[key].update(value)
+            window[key].update(value)  # update output values
 
-window.close()
+window.close()  # close window once the event loop is stopped

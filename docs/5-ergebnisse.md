@@ -4,7 +4,7 @@
 
 ### Geringster initialer Fehler
 
-Wie bereits beschrieben, sind zunächst jeweils 100 Netze mit pro Neuronenzahl auf der versteckten Schicht zufällig generiert worden. Anschließend wurde der Fehler über alle Beispieldaten berechnet. Die folgende Grafik zeigt die Ergebnisse:
+Wie bereits beschrieben, sind zunächst jeweils 100 Netze pro Neuronenzahl auf der versteckten Schicht zufällig generiert worden. Anschließend wurde der Fehler über alle Beispieldaten berechnet. Die folgende Grafik zeigt die Ergebnisse:
 
 ![Fehler der verschiedenen generierten Netze nach Neuronenzahl auf der versteckten Schicht](img/initial-nets-error.png){width=60%}
 
@@ -28,7 +28,7 @@ Für die Lösung der Aufgabe sind nur Netze mit geringen Fehlerwerten von Belang
 | 90 | 0,2121 |
 | 80 | 0,2391 |
 
-Die Tabelle bestätigt die erste Beobachtung: Netze mit 40 Neuronen oder mehr haben einen sehr hohen Fehler. Genauso die Netze mit 5 und 10 Neuronen. Die optimale Neuronenzahl scheint also eher zwischen 15 und 35 Neuronen zu liegen. Einzige Ausnahme ist der Ausreißer mit 70 Neuronen, welcher den 2. Platz belegt.
+Die Tabelle bestätigt die erste Beobachtung: Netze mit 40 Neuronen oder mehr haben einen sehr hohen Fehler. Zusätzlich ist zu sehen, dass die Netze mit 5 und 10 Neuronen ebenfalls einen etwas höheren Fehler aufweisen. Die optimale Neuronenzahl scheint also eher zwischen 15 und 35 Neuronen zu liegen. Einzige Ausnahme ist der Ausreißer mit 70 Neuronen, welcher den 2. Platz belegt.
 
 ### Fehlerwerte im Verlauf des Trainings
 
@@ -87,7 +87,7 @@ Die kleineren Lernraten würden das Training nur unnötig in die Länge ziehen. 
 
 ## Finales Training
 
-Mit dem vorherigen Schritt ist der Fehler des Netzes bereits auf 0,0028 gesunken. Das ist schon ein sehr geringer Fehler. Daher wird das Training nur noch ein kleines bisschen weiter fortgesetzt. Konkret wird das Netz nun solange weiter trainiert bis der Fehler *0,001* erreicht hat. Die folgende Grafik zeigt den kompletten Verlauf der Fehlerwerte von Beginn des Trainings bis die 0,001 erreicht ist:
+Mit dem vorherigen Schritt ist der Fehler des Netzes bereits auf 0,0028 gesunken. Das ist schon ein sehr geringer Fehler. Daher wird das Training nur noch ein kleines bisschen weiter fortgesetzt. Konkret wird das Netz nun solange weiter trainiert, bis der Fehler *0,001* erreicht hat. Die folgende Grafik zeigt den kompletten Verlauf der Fehlerwerte von Beginn des Trainings, bis die 0,001 erreicht ist:
 
 ![Verlauf der Fehlerwerte des finalen neuronalen Netzes](img/final-train.png){width=60%}
 
